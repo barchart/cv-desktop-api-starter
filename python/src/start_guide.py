@@ -15,6 +15,10 @@ except ImportError:
     print("Please install openfeed: pip install -r requirements.txt")
     sys.exit(1)
 
+from dotenv import load_dotenv
+
+load_dotenv()  # walks up from this file to find the repo-root .env
+
 # Configuration
 USERNAME = os.environ.get("OPENFEED_USERNAME")
 PASSWORD = os.environ.get("OPENFEED_PASSWORD")
