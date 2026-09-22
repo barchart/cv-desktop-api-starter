@@ -1,0 +1,19 @@
+{
+  "name": "openfeed-starter-node",
+  "version": "1.0.0",
+  "description": "OpenFeed SDK starter example (Node.js/TypeScript)",
+  "main": "dist/start-guide.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node dist/start-guide.js",
+    "dev": "tsc --watch & node --watch dist/start-guide.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@openfeed/sdk-js": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}
