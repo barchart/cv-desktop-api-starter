@@ -18,7 +18,7 @@ except ImportError:
 
 from dotenv import load_dotenv
 
-load_dotenv()  # walks up from this file to find the repo-root .env
+load_dotenv()  # reads .env from this folder (synced here by setup-env.sh/ps1)
 
 # Configuration
 USERNAME = os.environ.get("OPENFEED_USERNAME")

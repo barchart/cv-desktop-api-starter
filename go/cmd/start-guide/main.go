@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -155,30 +154,9 @@ func (h *MarketDataHandler) handleMarketUpdate(update *openfeed.MarketUpdate) {
 	}
 }
 
-// loadDotEnv walks up from the current directory to find the repo-root .env,
-// then hands it to godotenv to parse (it won't override already-set env vars).
-func loadDotEnv() {
-	dir, err := os.Getwd()
-	if err != nil {
-		return
-	}
-	for {
-		candidate := filepath.Join(dir, ".env")
-		if _, err := os.Stat(candidate); err == nil {
-			_ = godotenv.Load(candidate)
-			return
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			return
-		}
-		dir = parent
-	}
-}
-
 func main() {
 	log.SetOutput(log.Writer())
-	loadDotEnv()
+	_ = godotenv.Load() // reads .env from this process's working directory
 
 	username := os.Getenv("OPENFEED_USERNAME")
 	password := os.Getenv("OPENFEED_PASSWORD")

@@ -17,9 +17,8 @@ Go 1.21+.
   ```
 - **Windows**: double-click `setup.bat`
 
-This asks for your OpenFeed credentials (saved to `.env` at the repo root - see
-the root [README](../README.md#where-are-my-credentials) if you can't find it)
-and runs `go mod download`.
+This asks for your OpenFeed credentials (saved to `.env` in this folder and at
+the repo root) and runs `go mod download`.
 
 ## Run it
 ```bash
@@ -27,7 +26,7 @@ go run ./cmd/start-guide
 ```
 
 ## Troubleshooting
-- "Missing OPENFEED_USERNAME or OPENFEED_PASSWORD" -> check `.env` at the repo
-  root has both values filled in.
-- Re-running `setup.command` is safe - it skips credential setup if `.env`
-  already exists.
+- "Missing OPENFEED_USERNAME or OPENFEED_PASSWORD" -> check `.env` in this
+  folder has both values filled in.
+- Re-running `setup.command` is safe - it'll ask whether to set fresh
+  credentials, or you can just edit `.env` in this folder by hand.

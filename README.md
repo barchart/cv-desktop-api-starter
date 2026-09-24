@@ -44,17 +44,10 @@ Terminal avoids that entirely. Steps:
 
 Each script will:
 1. Check that the required runtime is installed, and print a download link if it's missing.
-2. Ask for your OpenFeed username and password the first time, and save them to a `.env` file at the repo root (never committed to git).
+2. Ask for your OpenFeed username and password the first time, and save them to a `.env` file at the repo root and in that language folder (never committed to git).
 3. Download/install the project's dependencies.
 4. Print the exact command to run the starter guide.
 
-## Where are my credentials?
-
-Your OpenFeed username/password are saved in a file named `.env` at the very
-root of this project (the same level as this README, one folder above every
-language folder). Since its name starts with a dot, it may not show up by default:
-- **macOS Finder**: press `Cmd+Shift+.` to toggle hidden files on/off.
-- **Windows File Explorer**: `.env` should already be visible (Windows only
-  hides files explicitly marked "Hidden", not dotfiles) - if you still don't
-  see it, open the **View** tab and check **Hidden items**.
-- **In VS Code**: it shows up normally in the file list on the left.
+To change your credentials later, either re-run that language's setup script
+(it'll ask "Set fresh credentials?") or just edit that folder's `.env` by
+hand - both are perfectly fine ways to update them.

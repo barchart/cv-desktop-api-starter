@@ -1,3 +1,4 @@
+import "dotenv/config"; // reads .env from this process's working directory
 import { InstrumentDefinition, OpenFeedClient, OpenfeedGatewayMessage, OpenFeedListeners, Service, SubscriptionType } from "@openfeed/sdk-js";
 
 const wsUrl = process.env.OPENFEED_WS_URL || "ws://localhost:9000";
@@ -64,10 +65,6 @@ listeners.onMessageWithMetadata = (message: OpenfeedGatewayMessage, symbolNames:
     return;
   }
 
-  if (message.greeks) {
-    console.log(`\n[Greeks] ${symbol} - Updated Greeks:`, message.greeks);
-  }
-
   // Handle market update - Update existing state and log only on change
   if (message.marketUpdate) {
     const update = message.marketUpdate;
@@ -95,5 +92,5 @@ listeners.onMessageWithMetadata = (message: OpenfeedGatewayMessage, symbolNames:
 };
 
 const client = new OpenFeedClient(wsUrl, username, password, listeners, console);
-client.subscribe(Service.REAL_TIME, SubscriptionType.ALL, 1, ["ESZ26"], null, null, null);
-client.subscribe(Service.REAL_TIME, SubscriptionType.ALL, 1, ["ZCZ26"], null, null, null);
+client.subscribe(Service.REAL_TIME, SubscriptionType.ALL, 1, ["AAPL"], null, null, null);
+client.subscribe(Service.REAL_TIME, SubscriptionType.ALL, 1, ["ZCH26"], null, null, null);

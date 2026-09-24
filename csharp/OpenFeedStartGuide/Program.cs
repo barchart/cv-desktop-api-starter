@@ -19,6 +19,8 @@ namespace OpenFeedStartGuide
 
         static async Task Main(string[] args)
         {
+            DotNetEnv.Env.Load(); // reads .env from this process's working directory
+
             var openfeedUrl = Environment.GetEnvironmentVariable("OPENFEED_WS_URL") ?? "ws://localhost:9000";
             var username = Environment.GetEnvironmentVariable("OPENFEED_USERNAME");
             var password = Environment.GetEnvironmentVariable("OPENFEED_PASSWORD");
