@@ -24,7 +24,7 @@ echo "Creating virtual environment and installing dependencies..."
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip >/dev/null
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 
 echo
 echo "Setup complete!"

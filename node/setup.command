@@ -18,7 +18,7 @@ bash ../setup-env.sh
 
 echo
 echo "Installing dependencies..."
-npm install
+npm install --no-fund --no-audit --loglevel=error
 
 echo
 echo "Setup complete!"

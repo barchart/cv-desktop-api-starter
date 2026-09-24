@@ -26,7 +26,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "..\setup-env.ps1"
 
 echo.
 echo Restoring dependencies...
-dotnet restore OpenFeedStartGuide\OpenFeedStartGuide.csproj
+dotnet restore OpenFeedStartGuide\OpenFeedStartGuide.csproj --verbosity quiet
 
 echo.
 echo Setup complete!

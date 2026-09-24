@@ -19,7 +19,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "..\setup-env.ps1"
 
 echo.
 echo Installing dependencies...
-call npm install
+call npm install --no-fund --no-audit --loglevel=error
 
 echo.
 echo Setup complete!

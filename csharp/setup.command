@@ -26,7 +26,7 @@ bash ../setup-env.sh
 
 echo
 echo "Restoring dependencies..."
-dotnet restore OpenFeedStartGuide/OpenFeedStartGuide.csproj
+dotnet restore OpenFeedStartGuide/OpenFeedStartGuide.csproj --verbosity quiet
 
 echo
 echo "Setup complete!"

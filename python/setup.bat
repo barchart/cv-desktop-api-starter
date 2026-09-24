@@ -23,7 +23,7 @@ echo Creating virtual environment and installing dependencies...
 python -m venv venv
 call venv\Scripts\activate.bat
 python -m pip install --upgrade pip >nul
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 
 echo.
 echo Setup complete!
