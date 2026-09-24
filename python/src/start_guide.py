@@ -130,7 +130,7 @@ def on_message(msg):
 
 # Subscribe to market data (see SDK documentation for available options)
 client.add_symbol_subscription(
-    symbol=["ZCZ26", "AAPL"],  # Corn, Soybean Oil, Apple stock
+    symbol=["ZCH26", "AAPL"],  # Corn, Soybean Oil, Apple stock
     callback=on_message,
     service="REAL_TIME",
     subscription_type=["ALL"]
