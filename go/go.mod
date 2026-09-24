@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/joho/godotenv v1.5.1
-	github.com/openfeed-org/sdk-go v0.1.8
+	github.com/openfeed-org/sdk-go v0.2.0
 )
 
 require (
