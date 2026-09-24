@@ -117,10 +117,10 @@ def on_message(msg):
         price_denom = market_state[symbol]['price_denominator']
 
         # Update state with new data
-        if update.HasField("trades") and update.HasField('session'):
+        if update.HasField("trades") and update.HasField('session') and update.session.last.price:
             market_state[symbol]['last_price'] = update.session.last.price / price_denom
 
-        elif update.HasField('last'):
+        elif update.HasField('last') and update.last.price:
             market_state[symbol]['last_price'] = update.last.price / price_denom
 
         # Only print if price changed
