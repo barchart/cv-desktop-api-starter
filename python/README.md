@@ -20,7 +20,7 @@ Command Line Tools installed - if `setup.command` errors out, accept the
   ```
 - **Windows**: double-click `setup.bat`
 
-This asks for your OpenFeed credentials (saved to `.env` in this folder and at
+This asks for your cmdtyView Dektop API credentials (saved to `.env` in this folder and at
 the repo root) and creates a `venv` folder with dependencies installed.
 
 ## Run it

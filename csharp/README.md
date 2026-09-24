@@ -18,7 +18,7 @@ text editor or VS Code, change something, save, then re-run it with
   ```
 - **Windows**: double-click `setup.bat`
 
-This asks for your OpenFeed credentials (saved to `.env` in this folder and at
+This asks for your cmdtyView Dektop API credentials (saved to `.env` in this folder and at
 the repo root) and runs `dotnet restore`.
 
 ## Run it

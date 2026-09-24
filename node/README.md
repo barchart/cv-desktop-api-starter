@@ -18,7 +18,7 @@ Node.js (LTS). Unlike Python, macOS ships with no Node.js at all, so
   ```
 - **Windows**: double-click `setup.bat`
 
-This asks for your OpenFeed credentials (saved to `.env` in this folder and at
+This asks for your cmdtyView Dektop API credentials (saved to `.env` in this folder and at
 the repo root) and runs `npm install`.
 
 ## Run it

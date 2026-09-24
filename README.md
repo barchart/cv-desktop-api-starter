@@ -1,6 +1,6 @@
 # cv-desktop-api-starter
 
-Starter examples for connecting to Barchart's OpenFeed real-time market data service, available in Python, Node.js, Java, Go, and C#.
+Starter examples for connecting to Barchart's cmdtyView Dektop API real-time market data service, available in Python, Node.js, Java, Go, and C#.
 
 Setting up the Barchart Desktop API app itself is a separate step, done in parallel with this starter kit - see the official docs: https://docs.barchart.com/cmdtyview-docs/desktop-api/getting-started/
 
@@ -44,7 +44,7 @@ Terminal avoids that entirely. Steps:
 
 Each script will:
 1. Check that the required runtime is installed, and print a download link if it's missing.
-2. Ask for your OpenFeed username and password the first time, and save them to a `.env` file at the repo root and in that language folder (never committed to git).
+2. Ask for your cmdtyView Dektop API username and password the first time, and save them to a `.env` file at the repo root and in that language folder (never committed to git).
 3. Download/install the project's dependencies.
 4. Print the exact command to run the starter guide.
 
