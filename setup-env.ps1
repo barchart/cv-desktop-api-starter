@@ -18,13 +18,13 @@ Write-Host "Let's set up your OpenFeed credentials (saved to .env, never committ
 $user = Read-Host "OpenFeed username"
 $securePass = Read-Host "OpenFeed password" -AsSecureString
 $pass = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePass))
-$ws = Read-Host "OpenFeed WebSocket URL [ws://localhost:9000]"
-if ([string]::IsNullOrWhiteSpace($ws)) { $ws = "ws://localhost:9000" }
+$port = Read-Host "Desktop API port [9000]"
+if ([string]::IsNullOrWhiteSpace($port)) { $port = "9000" }
 
 @"
 OPENFEED_USERNAME=$user
 OPENFEED_PASSWORD=$pass
-OPENFEED_WS_URL=$ws
+OPENFEED_WS_URL=ws://localhost:$port
 "@ | Set-Content -Path $EnvFile -NoNewline
 
 Write-Host "Saved credentials to .env"

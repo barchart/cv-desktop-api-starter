@@ -6,6 +6,7 @@ Connects to OpenFeed server and receives real-time market data.
 
 import os
 import sys
+import urllib.request
 from datetime import datetime
 from collections import defaultdict
 
@@ -23,120 +24,117 @@ load_dotenv()  # walks up from this file to find the repo-root .env
 USERNAME = os.environ.get("OPENFEED_USERNAME")
 PASSWORD = os.environ.get("OPENFEED_PASSWORD")
 
-if not USERNAME or not PASSWORD:
-    print("Missing OPENFEED_USERNAME or OPENFEED_PASSWORD. Set them in your .env file (see README) before running.")
+# OPENFEED_WS_URL may be given with or without a ws://\wss:// prefix - accept both.
+WS_URL = os.environ.get("OPENFEED_WS_URL", "ws://localhost:9000")
+SERVER = WS_URL.removeprefix("wss://").removeprefix("ws://")  # bare host:port, what the SDK expects
+
+# The Barchart Desktop application hosts the OpenFeed gateway locally - check
+# it's actually running before attempting to connect, for a clearer error.
+try:
+    urllib.request.urlopen(f"http://{SERVER}/health", timeout=3)
+except Exception:
+    print(f"Could not reach OpenFeed at {SERVER}.")
+    print("Make sure the Barchart Desktop application is running and its Desktop API is set up - see:")
+    print("  https://docs.barchart.com/cmdtyview-docs/desktop-api/getting-started/")
     sys.exit(1)
 
-# Track property occurrences: property name -> count
-property_occurrences: dict[str, int] = defaultdict(int)
+# Create client
+client = openfeed.OpenfeedClient(USERNAME, PASSWORD, SERVER)
 
-# Properties to exclude from logging (metadata/noise)
-EXCLUDED_PROPS = {
-    'marketId', 'symbol', 'transactionTime', 'distributionTime',
-    'marketSequence', 'sourceSequence', 'originatorId',
-    'priceDenominator', 'regional'
-}
+# Connection state handlers
+client.on_connected = lambda _: print("Connected to OpenFeed")
+client.on_disconnected = lambda _: print("Disconnected from OpenFeed")
+client.on_error = lambda err: print(f"Error: {err}")
 
-
-def get_message_fields(msg) -> dict:
-    """Extract fields from a protobuf message as a dict."""
-    result = {}
-    for field in msg.DESCRIPTOR.fields:
-        value = getattr(msg, field.name, None)
-        if value is not None:
-            # Check if field has value (for message types, check if it's set)
-            if field.message_type:
-                if msg.HasField(field.name):
-                    result[field.name] = value
-            elif value:  # For scalar types, check if non-empty/non-zero
-                result[field.name] = value
-    return result
-
+# Global state variables
+market_state = {}  # Dictionary to store state by symbol (includes price denominator)
+marketid_to_symbol = {}  # Maps marketId to symbol (updates use marketId, not symbol)
 
 def on_message(msg):
-    """Handle incoming market messages with property tracking."""
-    timestamp = datetime.now().isoformat()
-    symbol = getattr(msg, 'symbol', 'UNKNOWN')
+    """
+    Callback for market data messages.
 
-    # Determine message type and extract fields
-    msg_type = "MESSAGE"
-    fields = {}
+    Message flow after subscribing:
+    1. subscriptionResponse - confirmation of subscription
+    2. instrumentDefinition - metadata about the instrument
+    3. marketSnapshot - complete current state of the market
+    4. marketUpdate(s) - real-time incremental changes
+    """
+    global market_state, marketid_to_symbol
 
-    if hasattr(msg, 'marketUpdate') and msg.HasField('marketUpdate'):
-        msg_type = "MARKET UPDATE"
-        fields = get_message_fields(msg.marketUpdate)
-    elif hasattr(msg, 'marketSnapshot') and msg.HasField('marketSnapshot'):
-        msg_type = "MARKET SNAPSHOT"
-        fields = get_message_fields(msg.marketSnapshot)
-    elif hasattr(msg, 'subscriptionResponse') and msg.HasField('subscriptionResponse'):
-        print(f"Subscription Response: {msg.subscriptionResponse}")
-        return
-    else:
-        # For other message types, just log them
-        print("=" * 63)
-        print(f"[{symbol}] at {timestamp}")
-        print(f"      {msg}")
+    msg_type = msg.WhichOneof('data')
+
+    # Subscription confirmation
+    if msg_type == 'subscriptionResponse':
+        response = msg.subscriptionResponse
+        print(f"Subscription confirmed: {response.symbol}")
         return
 
-    # Get all keys excluding metadata
-    props = [k for k in fields.keys() if k not in EXCLUDED_PROPS]
+    # Instrument metadata
+    elif msg_type == 'instrumentDefinition':
+        instrument = msg.instrumentDefinition
+        symbol = instrument.subscriptionSymbol
 
-    # Track and log properties (first time and every 50th occurrence)
-    props_to_log = []
-    for prop in props:
-        property_occurrences[prop] += 1
-        count = property_occurrences[prop]
+        # Initialize state with price denominator
+        market_state[symbol] = {
+            'price_denominator': instrument.priceDenominator,
+            'last_price': None,
+        }
 
-        # Log on first occurrence OR every 50th occurrence
-        if count == 1 or count % 50 == 0:
-            props_to_log.append(prop)
+        marketid_to_symbol[instrument.marketId] = symbol
+        print(f"\n[Definition] {symbol} - {instrument.description}")
+        print(f"  Price Denominator: {instrument.priceDenominator}")
+        return
 
-    if props_to_log:
-        print("=" * 63)
-        print(f"[{symbol}] at {timestamp}")
-        print(f"\n📊 {msg_type} PROPERTIES: {', '.join(props_to_log)}")
+    # Initial market state - Populate state object
+    elif msg_type == 'marketSnapshot':
+        snapshot = msg.marketSnapshot
+        symbol = marketid_to_symbol.get(snapshot.marketId, f"Unknown({snapshot.marketId})")
 
-        # Log each property's content with occurrence info
-        for prop in props_to_log:
-            value = fields.get(prop)
-            count = property_occurrences[prop]
-            status = "NEW" if count == 1 else f"#{count}"
-            print(f"\n   {prop} [{status}]:")
-            print(f"      {value}")
+        # Make sure state exists
+        if symbol not in market_state:
+            return
 
-        # Show all discovered properties and their counts
-        all_props = ", ".join(
-            f"{prop}({count})"
-            for prop, count in sorted(property_occurrences.items())
-        )
-        print(f"\n✅ All properties: {all_props}")
+        # Populate initial values
+        if snapshot.HasField('last') and snapshot.last.price:
+            price_denom = market_state[symbol]['price_denominator']
+            market_state[symbol]['last_price'] = snapshot.last.price / price_denom
 
+        print(f"[Snapshot] {symbol} initialized - Last: {market_state[symbol]['last_price']}")
+        return
 
-def main():
-    """Main entry point."""
-    print(f"Username: {USERNAME}")
+    # Real-time updates - Update existing state
+    elif msg_type == 'marketUpdate':
+        update = msg.marketUpdate
+        symbol = marketid_to_symbol.get(update.marketId, f"Unknown({update.marketId})")
 
-    # Create client with credentials
-    of_client = openfeed.OpenfeedClient(USERNAME, PASSWORD)
+        # Make sure state exists (definition and snapshot must arrive first)
+        if symbol not in market_state:
+            return  # Silently ignore updates before state is initialized
 
-    # Optional state handlers
-    of_client.on_error = lambda x: print(f"Error: {x}")
-    of_client.on_connected = lambda x: print("Connected to OpenFeed")
-    of_client.on_disconnected = lambda x: print("Disconnected from OpenFeed")
+        # Track if state changed
+        old_price = market_state[symbol]['last_price']
+        price_denom = market_state[symbol]['price_denominator']
 
-    # Subscribe to symbols
-    symbols = ["ESM26"]
-    print(f"Subscribing to: {symbols}")
+        # Update state with new data
+        if update.HasField("trades") and update.HasField('session'):
+            market_state[symbol]['last_price'] = update.session.last.price / price_denom
 
-    for symbol in symbols:
-        of_client.add_symbol_subscription(symbol, callback=on_message)
+        elif update.HasField('last'):
+            market_state[symbol]['last_price'] = update.last.price / price_denom
 
-    try:
-        # Start the client (blocks until interrupted)
-        of_client.start()
-    except KeyboardInterrupt:
-        print("\nShutting down...")
+        # Only print if price changed
+        new_price = market_state[symbol]['last_price']
+        if new_price is not None and new_price != old_price:
+            print(f"[Update] {symbol} - Last: {new_price}")
 
+# Subscribe to market data (see SDK documentation for available options)
+client.add_symbol_subscription(
+    symbol=["ZCZ26", "AAPL"],  # Corn, Soybean Oil, Apple stock
+    callback=on_message,
+    service="REAL_TIME",
+    subscription_type=["ALL"]
+)
 
-if __name__ == "__main__":
-    main()
+# Start receiving data (blocking call)
+client.start()

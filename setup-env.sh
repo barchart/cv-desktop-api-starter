@@ -21,13 +21,13 @@ echo "Let's set up your OpenFeed credentials (saved to .env, never committed to 
 read -r -p "OpenFeed username: " OF_USER
 read -r -s -p "OpenFeed password: " OF_PASS
 echo
-read -r -p "OpenFeed WebSocket URL [ws://localhost:9000]: " OF_WS
-OF_WS=${OF_WS:-ws://localhost:9000}
+read -r -p "Desktop API port [9000]: " OF_PORT
+OF_PORT=${OF_PORT:-9000}
 
 cat > "$ENV_FILE" <<EOF
 OPENFEED_USERNAME=$OF_USER
 OPENFEED_PASSWORD=$OF_PASS
-OPENFEED_WS_URL=$OF_WS
+OPENFEED_WS_URL=ws://localhost:$OF_PORT
 EOF
 
 echo "Saved credentials to .env"
