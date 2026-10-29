@@ -1,4 +1,4 @@
-# Node.js Starter - Quick Notes
+# TypeScript Starter - Quick Notes
 
 ## Source code
 The actual program is [src/start-guide.ts](src/start-guide.ts). Open it in any
@@ -25,6 +25,15 @@ the repo root) and runs `npm install`.
 ```bash
 npm start
 ```
+
+## Your own scripts
+Put any number of `.ts` files in `src/` and run each one directly:
+```bash
+npx tsx src/my-script.ts
+npx tsx watch src/my-script.ts   # re-runs automatically on save
+```
+`tsx` runs TypeScript without a build step but doesn't check types; run
+`npm run typecheck` for that.
 
 ## Troubleshooting
 - "Missing OPENFEED_USERNAME or OPENFEED_PASSWORD" -> check `.env` in this

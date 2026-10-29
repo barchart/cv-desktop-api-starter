@@ -2,8 +2,8 @@
 .env
 
 # Node
-node/node_modules/
-node/dist/
+typescript/node_modules/
+typescript/dist/
 
 # Python
 python/venv/

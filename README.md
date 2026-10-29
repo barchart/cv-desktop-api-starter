@@ -16,13 +16,13 @@ nicely formatted instead of as plain text:
 
 ## Getting started (no programming experience needed)
 
-Each language has its own folder in this project (`python/`, `node/`, `java/`,
+Each language has its own folder in this project (`python/`, `typescript/`, `java/`,
 `go/`, `csharp/`), and inside that folder is a setup script:
 
 | Language | Folder | macOS script | Windows script |
 |----------|--------|--------------|----------------|
 | [Python](python/README.md)  | `python/`  | `setup.command` | `setup.bat` |
-| [Node.js](node/README.md)   | `node/`    | `setup.command` | `setup.bat` |
+| [TypeScript](typescript/README.md) | `typescript/` | `setup.command` | `setup.bat` |
 | [Java](java/README.md)      | `java/`    | `setup.command` | `setup.bat` |
 | [Go](go/README.md)          | `go/`      | `setup.command` | `setup.bat` |
 | [C#](csharp/README.md)      | `csharp/`  | `setup.command` | `setup.bat` |

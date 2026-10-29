@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 
-echo === OpenFeed Node.js Starter Setup ===
+echo === OpenFeed TypeScript Starter Setup ===
 echo.
 
 where node >nul 2>nul
@@ -23,6 +23,6 @@ call npm install --no-fund --no-audit --loglevel=error
 
 echo.
 echo Setup complete!
-echo To run the starter guide, open a terminal in the node folder and run:
+echo To run the starter guide, open a terminal in the typescript folder and run:
 echo   npm start
 pause
