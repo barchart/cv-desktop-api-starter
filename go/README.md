@@ -17,7 +17,7 @@ Go 1.21+.
   ```
 - **Windows**: double-click `setup.bat`
 
-This asks for your cmdtyView Dektop API credentials (saved to `.env` in this folder and at
+This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
 the repo root) and runs `go mod download`.
 
 ## Run it

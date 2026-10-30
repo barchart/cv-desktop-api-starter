@@ -19,7 +19,7 @@ downloads the right Maven version automatically.
   ```
 - **Windows**: double-click `setup.bat`
 
-This asks for your cmdtyView Dektop API credentials (saved to `.env` in this folder and at
+This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
 the repo root) and compiles the project via `mvnw compile`.
 
 ## Run it
