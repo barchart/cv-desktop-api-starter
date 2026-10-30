@@ -18,7 +18,12 @@ Command Line Tools installed - if `setup.command` errors out, accept the
   ```bash
   ./setup.command
   ```
-- **Windows**: double-click `setup.bat`
+- **Windows**: open PowerShell, `cd` into this `python` folder (see the root
+  [README](../README.md#getting-started-no-programming-experience-needed) if
+  you're not sure how), then run:
+  ```powershell
+  .\setup.bat
+  ```
 
 This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
 the repo root) and creates a `venv` folder with dependencies installed.

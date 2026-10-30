@@ -16,7 +16,12 @@ text editor or VS Code, change something, save, then re-run it with
   ```bash
   ./setup.command
   ```
-- **Windows**: double-click `setup.bat`
+- **Windows**: open PowerShell, `cd` into this `csharp` folder (see the root
+  [README](../README.md#getting-started-no-programming-experience-needed) if
+  you're not sure how), then run:
+  ```powershell
+  .\setup.bat
+  ```
 
 This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
 the repo root) and runs `dotnet restore`.

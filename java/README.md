@@ -17,7 +17,12 @@ downloads the right Maven version automatically.
   ```bash
   ./setup.command
   ```
-- **Windows**: double-click `setup.bat`
+- **Windows**: open PowerShell, `cd` into this `java` folder (see the root
+  [README](../README.md#getting-started-no-programming-experience-needed) if
+  you're not sure how), then run:
+  ```powershell
+  .\setup.bat
+  ```
 
 This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
 the repo root) and compiles the project via `mvnw compile`.

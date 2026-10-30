@@ -16,7 +16,12 @@ Node.js (LTS). Unlike Python, macOS ships with no Node.js at all, so
   ```bash
   ./setup.command
   ```
-- **Windows**: double-click `setup.bat`
+- **Windows**: open PowerShell, `cd` into this `typescript` folder (see the root
+  [README](../README.md#getting-started-no-programming-experience-needed) if
+  you're not sure how), then run:
+  ```powershell
+  .\setup.bat
+  ```
 
 This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
 the repo root) and runs `npm install`.

@@ -27,7 +27,15 @@ Each language has its own folder in this project (`python/`, `typescript/`, `jav
 | [Go](go/README.md)          | `go/`      | `setup.command` | `setup.bat` |
 | [C#](csharp/README.md)      | `csharp/`  | `setup.command` | `setup.bat` |
 
-**Windows**: double-click the `setup.bat` file inside that folder.
+**Windows**: run the script from PowerShell. Steps:
+1. Open **PowerShell** (press the Windows key, type `PowerShell`, press Enter).
+2. Move into the language folder. Type `cd ` (with a trailing space), then
+   drag that folder from File Explorer straight onto the PowerShell window -
+   it fills in the full path for you - then press Enter.
+3. Run the script:
+   ```powershell
+   .\setup.bat
+   ```
 
 **macOS**: run the script from Terminal rather than double-clicking it -
 double-clicking often gets blocked by macOS's Gatekeeper security ("cannot be
