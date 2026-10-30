@@ -2,14 +2,19 @@
   "name": "openfeed-starter-node",
   "version": "1.0.0",
   "description": "OpenFeed SDK starter example (Node.js/TypeScript)",
+  "type": "module",
   "scripts": {
     "start": "tsx src/start-guide.ts",
     "dev": "tsx watch src/start-guide.ts",
     "typecheck": "tsc --noEmit"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "license": "MIT",
   "dependencies": {
-    "@openfeed/sdk-js": "^1.6.2",
+    "@barchart/desktop-sdk-js": "^0.1.0",
+    "@openfeed/sdk-js": "^1.7.2",
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
