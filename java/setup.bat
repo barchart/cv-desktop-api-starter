@@ -27,8 +27,6 @@ if !JAVA_MAJOR! lss 17 (
 )
 java -version
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "..\setup-env.ps1"
-
 echo.
 echo Downloading dependencies and compiling the project (this may take a minute)...
 call mvnw.cmd -q compile

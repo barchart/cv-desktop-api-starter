@@ -52,10 +52,10 @@ Terminal avoids that entirely. Steps:
 
 Each script will:
 1. Check that the required runtime is installed, and print a download link if it's missing.
-2. Ask for your cmdtyView Desktop API username and password the first time, and save them to a `.env` file at the repo root and in that language folder (never committed to git).
-3. Download/install the project's dependencies.
-4. Print the exact command to run the starter guide.
+2. Download/install the project's dependencies.
+3. Print the exact command to run the starter guide.
 
-To change your credentials later, either re-run that language's setup script
-(it'll ask "Set fresh credentials?") or just edit that folder's `.env` by
-hand - both are perfectly fine ways to update them.
+Before running, open the starter script and replace the `YOUR_USERNAME` /
+`YOUR_PASSWORD` placeholders with your cmdtyView Desktop API
+credentials - each language's README shows which file. Don't commit your real
+credentials to git.

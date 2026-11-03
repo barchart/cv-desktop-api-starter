@@ -26,7 +26,6 @@ import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
 import org.openfeed.client.api.impl.websocket.OpenfeedClientWebSocket;
 
 import io.netty.channel.ChannelPromise;
-import io.github.cdimascio.dotenv.Dotenv;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -58,26 +57,11 @@ public class StartGuide implements OpenfeedClientEventHandler, OpenfeedClientHan
     public StartGuide() {
         final OpenfeedClientConfigImpl config = new OpenfeedClientConfigImpl();
 
-        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load(); // reads .env from this process's working directory
-
-        String username = dotenv.get("OPENFEED_USERNAME", System.getenv("OPENFEED_USERNAME"));
-        String password = dotenv.get("OPENFEED_PASSWORD", System.getenv("OPENFEED_PASSWORD"));
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            System.err.println("Missing OPENFEED_USERNAME or OPENFEED_PASSWORD. Set them in your .env file (see README) before running.");
-            System.exit(1);
-        }
-
-        config.setUserName(username);
-        config.setPassword(password);
-
-        String wsUrl = dotenv.get("OPENFEED_WS_URL", System.getenv("OPENFEED_WS_URL"));
-        if (wsUrl == null || wsUrl.isBlank()) {
-            wsUrl = "ws://localhost:9000";
-        }
-        String hostPort = wsUrl.replaceFirst("^wss?://", "");
-        String[] parts = hostPort.split(":", 2);
-        config.setHost(parts[0]);
-        config.setPort(parts.length > 1 ? Integer.parseInt(parts[1]) : 9000);
+        // Replace with your cmdtyView Desktop API credentials
+        config.setUserName("YOUR_USERNAME");
+        config.setPassword("YOUR_PASSWORD");
+        config.setHost("localhost");
+        config.setPort(9000);
 
         client = new OpenfeedClientWebSocket(config, this, this);
         client.connectAndLogin();

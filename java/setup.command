@@ -27,8 +27,6 @@ if [ "$JAVA_MAJOR" -lt 17 ] 2>/dev/null; then
 fi
 echo "Found $JAVA_VERSION_LINE"
 
-bash ../setup-env.sh
-
 echo
 echo "Downloading dependencies and compiling the project (this may take a minute)..."
 chmod +x mvnw

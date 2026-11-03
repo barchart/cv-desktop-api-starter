@@ -1,14 +1,9 @@
-import "dotenv/config"; // reads .env from this process's working directory
 import { InstrumentDefinition, OpenFeedClient, OpenfeedGatewayMessage, OpenFeedListeners, Service, SubscriptionType } from "@openfeed/sdk-js";
 
-const wsUrl = process.env.OPENFEED_WS_URL || "ws://localhost:9000";
-const username = process.env.OPENFEED_USERNAME;
-const password = process.env.OPENFEED_PASSWORD;
-
-if (!username || !password) {
-  console.error("Missing OPENFEED_USERNAME or OPENFEED_PASSWORD. Set them in your .env file (see README) before running.");
-  process.exit(1);
-}
+// Replace with your cmdtyView Desktop API credentials
+const wsUrl = "ws://localhost:9000";
+const username = "YOUR_USERNAME";
+const password = "YOUR_PASSWORD";
 
 type MarketState = {
   priceDenominator: number;

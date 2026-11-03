@@ -22,8 +22,12 @@ Go 1.21+.
   .\setup.bat
   ```
 
-This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
-the repo root) and runs `go mod download`.
+This checks your setup and runs `go mod download`.
+
+## Add your credentials
+Open [cmd/start-guide/main.go](cmd/start-guide/main.go) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
+(`username` and `password` - search the file for `YOUR_USERNAME`) with your cmdtyView Desktop API credentials.
+Do the same in any new script you add.
 
 ## Run it
 ```bash
@@ -31,7 +35,6 @@ go run ./cmd/start-guide
 ```
 
 ## Troubleshooting
-- "Missing OPENFEED_USERNAME or OPENFEED_PASSWORD" -> check `.env` in this
-  folder has both values filled in.
-- Re-running `setup.command` is safe - it'll ask whether to set fresh
-  credentials, or you can just edit `.env` in this folder by hand.
+- "Invalid credentials" or login rejected -> check the username and password
+  you entered in `cmd/start-guide/main.go`.
+- Re-running the setup script is safe.

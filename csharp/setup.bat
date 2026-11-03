@@ -22,8 +22,6 @@ if !DOTNET_MAJOR! lss 8 (
 )
 dotnet --version
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "..\setup-env.ps1"
-
 echo.
 echo Restoring dependencies...
 dotnet restore OpenFeedStartGuide\OpenFeedStartGuide.csproj --verbosity quiet

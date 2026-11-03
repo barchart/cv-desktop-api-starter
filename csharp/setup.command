@@ -22,8 +22,6 @@ if [ "$DOTNET_MAJOR" -lt 8 ] 2>/dev/null; then
 fi
 echo "Found dotnet $DOTNET_VERSION"
 
-bash ../setup-env.sh
-
 echo
 echo "Restoring dependencies..."
 dotnet restore OpenFeedStartGuide/OpenFeedStartGuide.csproj --verbosity quiet

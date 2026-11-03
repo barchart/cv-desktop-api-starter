@@ -6,10 +6,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"strings"
 
-	"github.com/joho/godotenv"
 	"github.com/openfeed-org/sdk-go/openfeed"
 )
 
@@ -156,20 +153,11 @@ func (h *MarketDataHandler) handleMarketUpdate(update *openfeed.MarketUpdate) {
 
 func main() {
 	log.SetOutput(log.Writer())
-	_ = godotenv.Load() // reads .env from this process's working directory
 
-	username := os.Getenv("OPENFEED_USERNAME")
-	password := os.Getenv("OPENFEED_PASSWORD")
-	if username == "" || password == "" {
-		log.Fatal("Missing OPENFEED_USERNAME or OPENFEED_PASSWORD. Set them in your .env file (see README) before running.")
-	}
-
-	wsURL := os.Getenv("OPENFEED_WS_URL")
-	if wsURL == "" {
-		wsURL = "ws://localhost:9000"
-	}
-	// SDK expects a bare host:port, not a URL scheme
-	wsURL = strings.TrimPrefix(strings.TrimPrefix(wsURL, "wss://"), "ws://")
+	// Replace with your cmdtyView Desktop API credentials
+	username := "YOUR_USERNAME"
+	password := "YOUR_PASSWORD"
+	wsURL := "localhost:9000" // SDK expects a bare host:port, not a URL scheme
 
 	// Create connection
 	conn := openfeed.NewConnection(openfeed.Credentials{

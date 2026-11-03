@@ -19,18 +19,10 @@ namespace OpenFeedStartGuide
 
         static async Task Main(string[] args)
         {
-            DotNetEnv.Env.Load(); // reads .env from this process's working directory
-
-            var openfeedUrl = Environment.GetEnvironmentVariable("OPENFEED_WS_URL") ?? "ws://localhost:9000";
-            var username = Environment.GetEnvironmentVariable("OPENFEED_USERNAME");
-            var password = Environment.GetEnvironmentVariable("OPENFEED_PASSWORD");
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                Console.WriteLine("Missing OPENFEED_USERNAME or OPENFEED_PASSWORD. Set them in your .env file (see README) before running.");
-                Environment.Exit(1);
-                return;
-            }
+            // Replace with your cmdtyView Desktop API credentials
+            var openfeedUrl = "ws://localhost:9000";
+            var username = "YOUR_USERNAME";
+            var password = "YOUR_PASSWORD";
 
             Console.WriteLine("Connecting to OpenFeed...");
 

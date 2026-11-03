@@ -23,8 +23,12 @@ text editor or VS Code, change something, save, then re-run it with
   .\setup.bat
   ```
 
-This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
-the repo root) and runs `dotnet restore`.
+This checks your setup and runs `dotnet restore`.
+
+## Add your credentials
+Open [OpenFeedStartGuide/Program.cs](OpenFeedStartGuide/Program.cs) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
+(`username` and `password` - search the file for `YOUR_USERNAME`) with your cmdtyView Desktop API credentials.
+Do the same in any new script you add.
 
 ## Run it
 ```bash
@@ -33,7 +37,6 @@ dotnet run --project OpenFeedStartGuide
 (run from the `csharp` folder)
 
 ## Troubleshooting
-- "Missing OPENFEED_USERNAME or OPENFEED_PASSWORD" -> check `.env` in this
-  folder has both values filled in.
-- Re-running `setup.command` is safe - it'll ask whether to set fresh
-  credentials, or you can just edit `.env` in this folder by hand.
+- "Invalid credentials" or login rejected -> check the username and password
+  you entered in `OpenFeedStartGuide/Program.cs`.
+- Re-running the setup script is safe.

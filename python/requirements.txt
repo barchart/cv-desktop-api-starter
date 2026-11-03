@@ -1,3 +1,2 @@
 # OpenFeed Python SDK
 openfeed>=1.4.0
-python-dotenv>=1.0.0

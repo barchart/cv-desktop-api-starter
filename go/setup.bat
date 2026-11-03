@@ -15,8 +15,6 @@ if errorlevel 1 (
 )
 go version
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "..\setup-env.ps1"
-
 echo.
 echo Downloading dependencies...
 call go mod download

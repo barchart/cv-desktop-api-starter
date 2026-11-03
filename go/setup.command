@@ -14,8 +14,6 @@ if ! command -v go >/dev/null 2>&1; then
 fi
 echo "Found $(go version)"
 
-bash ../setup-env.sh
-
 echo
 echo "Downloading dependencies..."
 go mod download

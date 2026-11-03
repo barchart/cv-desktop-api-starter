@@ -4,7 +4,6 @@ OpenFeed WebSocket Client - Python starter guide.
 Connects to OpenFeed server and receives real-time market data.
 """
 
-import os
 import sys
 import urllib.request
 from datetime import datetime
@@ -16,17 +15,10 @@ except ImportError:
     print("Please install openfeed: pip install -r requirements.txt")
     sys.exit(1)
 
-from dotenv import load_dotenv
-
-load_dotenv()  # reads .env from this folder (synced here by setup-env.sh/ps1)
-
-# Configuration
-USERNAME = os.environ.get("OPENFEED_USERNAME")
-PASSWORD = os.environ.get("OPENFEED_PASSWORD")
-
-# OPENFEED_WS_URL may be given with or without a ws://\wss:// prefix - accept both.
-WS_URL = os.environ.get("OPENFEED_WS_URL", "ws://localhost:9000")
-SERVER = WS_URL.removeprefix("wss://").removeprefix("ws://")  # bare host:port, what the SDK expects
+# Configuration - replace with your cmdtyView Desktop API credentials
+USERNAME = "YOUR_USERNAME"
+PASSWORD = "YOUR_PASSWORD"
+SERVER = "localhost:9000"  # bare host:port, what the SDK expects
 
 # The Barchart Desktop application hosts the OpenFeed gateway locally - check
 # it's actually running before attempting to connect, for a clearer error.

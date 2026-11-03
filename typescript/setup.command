@@ -28,8 +28,6 @@ if [ "$NODE_MAJOR" -lt 22 ]; then
 fi
 echo "Found node $(node --version)"
 
-bash ../setup-env.sh
-
 echo
 echo "Installing dependencies..."
 npm install --no-fund --no-audit --loglevel=error

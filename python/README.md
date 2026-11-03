@@ -25,8 +25,12 @@ Command Line Tools installed - if `setup.command` errors out, accept the
   .\setup.bat
   ```
 
-This asks for your cmdtyView Desktop API credentials (saved to `.env` in this folder and at
-the repo root) and creates a `venv` folder with dependencies installed.
+This checks your setup and creates a `venv` folder with dependencies installed.
+
+## Add your credentials
+Open [src/start_guide.py](src/start_guide.py) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
+(`USERNAME` and `PASSWORD` - search the file for `YOUR_USERNAME`) with your cmdtyView Desktop API credentials.
+Do the same in any new script you add.
 
 ## Run it
 ```bash
@@ -37,7 +41,6 @@ python3 src/start_guide.py
 ```
 
 ## Troubleshooting
-- "Missing OPENFEED_USERNAME or OPENFEED_PASSWORD" -> check `.env` in this
-  folder has both values filled in.
-- Re-running `setup.command` is safe - it'll ask whether to set fresh
-  credentials, or you can just edit `.env` in this folder by hand.
+- "Invalid credentials" or login rejected -> check the username and password
+  you entered in `src/start_guide.py`.
+- Re-running the setup script is safe.

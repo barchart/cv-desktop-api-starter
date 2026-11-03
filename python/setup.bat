@@ -16,8 +16,6 @@ if errorlevel 1 (
 )
 python --version
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "..\setup-env.ps1"
-
 echo.
 echo Creating virtual environment and installing dependencies...
 python -m venv venv
