@@ -35,11 +35,11 @@ echo Installing dependencies...
 call npm install --no-fund --no-audit --loglevel=error
 
 echo.
-echo Creating a command for each script in src/...
-call npm run --silent install-commands
+echo Adding the cvdesk command to your PATH...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\add-to-path.ps1"
 
 echo.
 echo Setup complete!
 echo To run the starter guide, open a new PowerShell window and run:
-echo   start-guide-run
+echo   cvdesk start-guide
 pause

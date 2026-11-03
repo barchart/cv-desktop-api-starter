@@ -31,13 +31,12 @@ Install the LTS version with `fnm install --lts`, `nvm install --lts`, or
   .\setup.bat
   ```
 
-This checks your setup, runs `npm install`, and creates a `<name>-run` command
-for every script in `src/` (for example `start-guide-run`, `desktop-sdk-run`).
-On macOS it adds the `bin/` folder with those commands to your PATH in
-`~/.zshrc`. On Windows it installs them into npm's global folder (already on
-your PATH), the same way `npm install -g` installs any tool; remove them with
-`npm uninstall -g cv-desktop-api-starter-commands`. Open a new terminal window
-afterwards to use them.
+This checks your setup, runs `npm install`, and installs the `cvdesk` command,
+which runs any script in `src/` from any folder (see below). It adds this
+project's `bin/` folder to your PATH: in `~/.zshrc` on macOS, in your user
+environment variables on Windows. `cvdesk` uses whichever Node.js version is
+active, so switching versions with fnm or nvm doesn't affect it. Open a new
+terminal window afterwards to use it. If you move this folder, run setup again.
 
 ## Add your credentials
 Open [src/start-guide.ts](src/start-guide.ts) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
@@ -47,24 +46,31 @@ Do the same in any new script you add.
 ## Run it
 From any folder:
 ```bash
-start-guide-run
+cvdesk start-guide
 ```
 or, from inside this `typescript` folder, `npm start`.
 
 ## Your own scripts
-Put any number of `.ts` files in `src/`. To get a command for a new script,
-re-run setup, or run this from inside the `typescript` folder:
+Put any number of `.ts` files in `src/` and run each one from any folder,
+with optional arguments:
 ```bash
-npm run install-commands
+cvdesk my-script arg1 arg2
+cvdesk                # lists the scripts in src/
 ```
-Then `src/my-script.ts` runs from any folder as:
-```bash
-my-script-run arg1 arg2
-```
-Without installing a command, run it from inside this folder with
-`npm run file src/my-script.ts`.
+New scripts work straight away; there's no need to re-run setup. From inside
+this folder, `npm run file my-script` does the same without the global command.
 
-Both type-check that script (and anything it imports) first, and only run it
+`cvdesk` also runs `.ts` files anywhere else on your computer: give it the
+file's path instead of a name.
+```bash
+cvdesk ./my-script.ts            # relative to the folder you're in
+cvdesk ~/Desktop/test.ts arg1    # or a full path
+```
+Those scripts can import the same packages as the scripts in `src/` (for
+example `@barchart/desktop-sdk-js`) without their own `npm install`, and get
+the same type check and settings.
+
+`cvdesk` type-checks that script (and anything it imports) first, and only runs it
 if there are no type errors. Errors in other files in `src/` do not block it.
 For quick iteration without the check, `npx tsx watch src/my-script.ts`
 re-runs the script on every save (`npm run typecheck` checks types on demand).

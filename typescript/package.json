@@ -4,11 +4,10 @@
   "description": "OpenFeed SDK starter example (Node.js/TypeScript)",
   "type": "module",
   "scripts": {
-    "start": "tsx scripts/run.ts src/start-guide.ts",
+    "start": "tsx scripts/run.ts start-guide",
     "file": "tsx scripts/run.ts",
     "dev": "tsx watch src/start-guide.ts",
-    "typecheck": "tsc --noEmit",
-    "install-commands": "tsx scripts/install-commands.ts"
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=22"

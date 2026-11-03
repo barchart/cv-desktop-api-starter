@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+// The cvdesk command: `cvdesk <script> [arguments]` type-checks and runs
+// src/<script>.ts from any folder (see scripts/run.ts).
+// setup.command (macOS) and setup.bat (Windows) add this bin/ folder to PATH.
+// On Windows, cvdesk.cmd next to this file is what the terminal runs.
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+const fromProject = (p) => fileURLToPath(new URL(`../${p}`, import.meta.url));
+const result = spawnSync(process.execPath,
+    [fromProject("node_modules/tsx/dist/cli.mjs"), fromProject("scripts/run.ts"), ...process.argv.slice(2)],
+    { stdio: "inherit" });
+process.exit(result.status ?? 1);

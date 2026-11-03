@@ -33,11 +33,18 @@ echo "Installing dependencies..."
 npm install --no-fund --no-audit --loglevel=error
 
 echo
-echo "Creating a command for each script in src/..."
-npm run --silent install-commands
+echo "Adding the cvdesk command to your PATH..."
+chmod +x bin/cvdesk
+PROFILE="$HOME/.zshrc"
+[ "$(basename "$SHELL")" = "bash" ] && PROFILE="$HOME/.bash_profile"
+PATH_LINE="export PATH=\"$(pwd)/bin:\$PATH\""
+if ! grep -qxF "$PATH_LINE" "$PROFILE" 2>/dev/null; then
+  printf '\n# cmdtyView Desktop API TypeScript starter: cvdesk command\n%s\n' "$PATH_LINE" >> "$PROFILE"
+  echo "Added $(pwd)/bin to your PATH in $PROFILE"
+fi
 
 echo
 echo "Setup complete!"
 echo "To run the starter guide, open a new terminal window and run:"
-echo "  start-guide-run"
+echo "  cvdesk start-guide"
 read -r -p "Press Enter to close..." _
