@@ -4,6 +4,7 @@
 # Node
 typescript/node_modules/
 typescript/dist/
+typescript/bin/
 
 # Python
 python/venv/

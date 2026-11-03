@@ -31,7 +31,13 @@ Install the LTS version with `fnm install --lts`, `nvm install --lts`, or
   .\setup.bat
   ```
 
-This checks your setup and runs `npm install`.
+This checks your setup, runs `npm install`, and creates a `<name>-run` command
+for every script in `src/` (for example `start-guide-run`, `desktop-sdk-run`).
+On macOS it adds the `bin/` folder with those commands to your PATH in
+`~/.zshrc`. On Windows it installs them into npm's global folder (already on
+your PATH), the same way `npm install -g` installs any tool; remove them with
+`npm uninstall -g cv-desktop-api-starter-commands`. Open a new terminal window
+afterwards to use them.
 
 ## Add your credentials
 Open [src/start-guide.ts](src/start-guide.ts) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
@@ -39,18 +45,29 @@ Open [src/start-guide.ts](src/start-guide.ts) and replace `YOUR_USERNAME` / `YOU
 Do the same in any new script you add.
 
 ## Run it
+From any folder:
 ```bash
-npm start
+start-guide-run
 ```
+or, from inside this `typescript` folder, `npm start`.
 
 ## Your own scripts
-Put any number of `.ts` files in `src/` and run each one directly:
+Put any number of `.ts` files in `src/`. To get a command for a new script,
+re-run setup, or run this from inside the `typescript` folder:
 ```bash
-npx tsx src/my-script.ts
-npx tsx watch src/my-script.ts   # re-runs automatically on save
+npm run install-commands
 ```
-`tsx` runs TypeScript without a build step but doesn't check types; run
-`npm run typecheck` for that.
+Then `src/my-script.ts` runs from any folder as:
+```bash
+my-script-run arg1 arg2
+```
+Without installing a command, run it from inside this folder with
+`npm run file src/my-script.ts`.
+
+Both type-check that script (and anything it imports) first, and only run it
+if there are no type errors. Errors in other files in `src/` do not block it.
+For quick iteration without the check, `npx tsx watch src/my-script.ts`
+re-runs the script on every save (`npm run typecheck` checks types on demand).
 
 The project runs as ES modules, so use `import` (not `require`), and you can
 use `await` at the top level of a script.

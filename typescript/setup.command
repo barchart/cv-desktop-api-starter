@@ -33,7 +33,11 @@ echo "Installing dependencies..."
 npm install --no-fund --no-audit --loglevel=error
 
 echo
+echo "Creating a command for each script in src/..."
+npm run --silent install-commands
+
+echo
 echo "Setup complete!"
-echo "To run the starter guide, open a terminal in the typescript folder and run:"
-echo "  npm start"
+echo "To run the starter guide, open a new terminal window and run:"
+echo "  start-guide-run"
 read -r -p "Press Enter to close..." _
