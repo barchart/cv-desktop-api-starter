@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@barchart/desktop-sdk-js": "^0.1.1",
+    "@barchart/desktop-sdk-js": "^0.2.0",
     "@openfeed/sdk-js": "^1.7.2"
   },
   "devDependencies": {

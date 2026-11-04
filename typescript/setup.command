@@ -33,6 +33,20 @@ echo "Installing dependencies..."
 npm install --no-fund --no-audit --loglevel=error
 
 echo
+echo "Checking for the latest @barchart/desktop-sdk-js..."
+SDK="@barchart/desktop-sdk-js"
+CURRENT=$(node -p "require('./node_modules/$SDK/package.json').version")
+LATEST=$(npm view "$SDK" version 2>/dev/null) || true
+if [ -z "$LATEST" ]; then
+  echo "Could not reach the npm registry, keeping version $CURRENT."
+elif [ "$CURRENT" = "$LATEST" ]; then
+  echo "Up to date ($CURRENT)."
+else
+  echo "Updating $CURRENT -> $LATEST..."
+  npm install "$SDK@latest" --no-fund --no-audit --loglevel=error
+fi
+
+echo
 echo "Adding the cvdesk command to your PATH..."
 chmod +x bin/cvdesk
 PROFILE="$HOME/.zshrc"
