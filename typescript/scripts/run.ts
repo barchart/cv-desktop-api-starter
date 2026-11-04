@@ -60,6 +60,8 @@ if (diagnostics.length > 0) {
 
 const tsxCli = createRequire(import.meta.url).resolve("tsx/cli");
 const hooks = pathToFileURL(path.join(projectDir, "scripts", "project-imports.mjs")).href;
-const registerHooks = "data:text/javascript," + encodeURIComponent(`import { register } from "node:module"; register(${JSON.stringify(hooks)});`);
+const registerHooks = "data:text/javascript," + encodeURIComponent(`import * as m from "node:module";
+if (m.registerHooks) m.registerHooks({ resolve: (await import(${JSON.stringify(hooks)})).resolveSync });
+else m.register(${JSON.stringify(hooks)});`);
 const result = spawnSync(process.execPath, [tsxCli, "--import", registerHooks, file, ...args], { stdio: "inherit" });
 process.exit(result.status ?? 1);
