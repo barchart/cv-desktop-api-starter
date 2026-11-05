@@ -1,5 +1,5 @@
 // Node.js module hooks that let scripts outside this project run like the ones
-// in src/. Loaded by run.ts.
+// in my-scripts/ and examples/. Loaded by run.ts.
 // - Packages a script imports (e.g. @barchart/desktop-sdk-js) are looked up
 //   next to the script first, then in this project's node_modules.
 // - .ts files outside the project run as ES modules (import, top-level await),

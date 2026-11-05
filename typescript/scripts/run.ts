@@ -1,8 +1,9 @@
 // Type-checks a single script (plus whatever it imports) using tsconfig.json,
 // then runs it with tsx. The script is either a file path (relative to the
-// current folder, or absolute) or the name of a script in src/: `my-script`,
-// `my-script.ts`. Without one, it lists the scripts in src/. Works from any
-// directory, so the cvdesk command uses it.
+// current folder, or absolute) or the name of a script in my-scripts/ or
+// examples/: `my-script`, `my-script.ts`. my-scripts/ wins if both have one.
+// Without one, it lists the scripts. Works from any directory, so the cvdesk
+// command uses it.
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import fs from "node:fs";
@@ -11,24 +12,32 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
 
 const projectDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const srcDir = path.join(projectDir, "src");
+const scriptDirs = ["my-scripts", "examples"];
 
-const scripts = fs.readdirSync(srcDir)
+const scriptsIn = (dir: string) => (fs.existsSync(path.join(projectDir, dir)) ? fs.readdirSync(path.join(projectDir, dir)) : [])
     .filter((f) => f.endsWith(".ts") && !f.endsWith(".d.ts"))
     .map((f) => path.basename(f, ".ts"));
 
 const isFile = (p: string) => fs.statSync(p, { throwIfNoEntry: false })?.isFile() ?? false;
 
 const [scriptArg, ...args] = process.argv.slice(2);
+const scriptName = scriptArg && path.basename(scriptArg, ".ts");
+const scriptDir = scriptName && scriptDirs.find((dir) => scriptsIn(dir).includes(scriptName));
 let file: string | undefined;
 if (scriptArg && isFile(path.resolve(scriptArg))) {
     file = path.resolve(scriptArg);
-} else if (scriptArg && scripts.includes(path.basename(scriptArg, ".ts"))) {
-    file = path.join(srcDir, `${path.basename(scriptArg, ".ts")}.ts`);
+} else if (scriptDir) {
+    file = path.join(projectDir, scriptDir, `${scriptName}.ts`);
 } else {
-    if (scriptArg) console.error(`No file "${scriptArg}" here and no script by that name in ${srcDir}\n`);
-    console.error("Usage: cvdesk <script name or file path> [arguments]\n\nScripts in src/:");
-    for (const s of scripts) console.error(`  ${s}`);
+    if (scriptArg) console.error(`No file "${scriptArg}" here and no script by that name in ${scriptDirs.join("/ or ")}/\n`);
+    console.error("Usage: cvdesk <script name or file path> [arguments]");
+    console.error("       cvdesk update     (installs the newest version of this project)");
+    for (const dir of scriptDirs) {
+        console.error(`\nScripts in ${dir}/:`);
+        const scripts = scriptsIn(dir);
+        if (scripts.length === 0) console.error("  (none yet)");
+        for (const s of scripts) console.error(`  ${s}`);
+    }
     process.exit(1);
 }
 const insideProject = !path.relative(projectDir, file).startsWith("..");

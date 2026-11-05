@@ -30,23 +30,10 @@ if %NODE_MAJOR% LSS 22 (
 )
 node --version
 
-echo.
-echo Installing dependencies...
-call npm install --no-fund --no-audit --loglevel=error
-
-echo.
-echo Checking for the latest @barchart/desktop-sdk-js...
-set SDK=@barchart/desktop-sdk-js
-for /f %%v in ('node -p "require('./node_modules/%SDK%/package.json').version"') do set CURRENT=%%v
-set LATEST=
-for /f %%v in ('call npm view %SDK% version 2^>nul') do set LATEST=%%v
-if "%LATEST%"=="" (
-  echo Could not reach the npm registry, keeping version %CURRENT%.
-) else if "%CURRENT%"=="%LATEST%" (
-  echo Up to date ^(%CURRENT%^).
-) else (
-  echo Updating %CURRENT% -^> %LATEST%...
-  call npm install %SDK%@latest --no-fund --no-audit --loglevel=error
+node "%~dp0scripts\project-setup.mjs"
+if errorlevel 1 (
+  pause
+  exit /b 1
 )
 
 echo.
@@ -57,4 +44,6 @@ echo.
 echo Setup complete!
 echo To run the starter guide, open a new PowerShell window and run:
 echo   cvdesk start-guide
+echo Put your own scripts in the my-scripts folder. To get the newest version
+echo of this project later, run: cvdesk update
 pause

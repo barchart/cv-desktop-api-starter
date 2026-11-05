@@ -4,6 +4,10 @@
 # Node
 typescript/node_modules/
 typescript/dist/
+typescript/my-scripts/
+typescript/previous-version/
+typescript/src/
+typescript/.cvdesk-installed.json
 
 # Python
 python/venv/

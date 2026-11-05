@@ -1,13 +1,17 @@
 #!/usr/bin/env node
-// The cvdesk command: `cvdesk <script> [arguments]` type-checks and runs
-// src/<script>.ts from any folder (see scripts/run.ts).
+// The cvdesk command: `cvdesk <script> [arguments]` type-checks and runs a
+// script from my-scripts/ or examples/, from any folder (see scripts/run.ts).
+// `cvdesk update` installs the newest version of this project (see scripts/update.mjs).
 // setup.command (macOS) and setup.bat (Windows) add this bin/ folder to PATH.
 // On Windows, cvdesk.cmd next to this file is what the terminal runs.
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const fromProject = (p) => fileURLToPath(new URL(`../${p}`, import.meta.url));
-const result = spawnSync(process.execPath,
-    [fromProject("node_modules/tsx/dist/cli.mjs"), fromProject("scripts/run.ts"), ...process.argv.slice(2)],
-    { stdio: "inherit" });
+const [command, ...args] = process.argv.slice(2);
+const result = command === "update"
+    ? spawnSync(process.execPath, [fromProject("scripts/update.mjs"), ...args], { stdio: "inherit" })
+    : spawnSync(process.execPath,
+        [fromProject("node_modules/tsx/dist/cli.mjs"), fromProject("scripts/run.ts"), ...process.argv.slice(2)],
+        { stdio: "inherit" });
 process.exit(result.status ?? 1);
