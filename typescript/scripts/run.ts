@@ -2,6 +2,9 @@
 // then runs it with tsx. The script is either a file path (relative to the
 // current folder, or absolute) or the name of a script in my-scripts/ or
 // examples/: `my-script`, `my-script.ts`. my-scripts/ wins if both have one.
+// Scripts can also be plain JavaScript (.js, .mjs): those are checked for
+// syntax errors and missing imports only, not types. If a folder has both
+// my-script.ts and my-script.js, the name runs the .ts one.
 // Without one, it lists the scripts. Works from any directory, so the cvdesk
 // command uses it.
 import { spawnSync } from "node:child_process";
@@ -14,20 +17,35 @@ import ts from "typescript";
 const projectDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const scriptDirs = ["my-scripts", "examples"];
 
-const scriptsIn = (dir: string) => (fs.existsSync(path.join(projectDir, dir)) ? fs.readdirSync(path.join(projectDir, dir)) : [])
-    .filter((f) => f.endsWith(".ts") && !f.endsWith(".d.ts"))
-    .map((f) => path.basename(f, ".ts"));
+// In order of preference when one name has several files.
+const scriptExtensions = [".ts", ".js", ".mjs"];
+const stripExtension = (f: string) => {
+    const ext = scriptExtensions.find((e) => f.endsWith(e));
+    return ext ? f.slice(0, -ext.length) : f;
+};
+
+// Script file names in a folder, one per script name (the preferred extension wins).
+const scriptsIn = (dir: string) => {
+    const files = fs.existsSync(path.join(projectDir, dir)) ? fs.readdirSync(path.join(projectDir, dir)) : [];
+    const byName = new Map<string, string>();
+    for (const ext of scriptExtensions) {
+        for (const f of files) {
+            if (f.endsWith(ext) && !f.endsWith(".d.ts") && !byName.has(stripExtension(f))) byName.set(stripExtension(f), f);
+        }
+    }
+    return byName;
+};
 
 const isFile = (p: string) => fs.statSync(p, { throwIfNoEntry: false })?.isFile() ?? false;
 
 const [scriptArg, ...args] = process.argv.slice(2);
-const scriptName = scriptArg && path.basename(scriptArg, ".ts");
-const scriptDir = scriptName && scriptDirs.find((dir) => scriptsIn(dir).includes(scriptName));
+const scriptName = scriptArg && stripExtension(path.basename(scriptArg));
+const scriptDir = scriptName && scriptDirs.find((dir) => scriptsIn(dir).has(scriptName));
 let file: string | undefined;
 if (scriptArg && isFile(path.resolve(scriptArg))) {
     file = path.resolve(scriptArg);
 } else if (scriptDir) {
-    file = path.join(projectDir, scriptDir, `${scriptName}.ts`);
+    file = path.join(projectDir, scriptDir, scriptsIn(scriptDir).get(scriptName)!);
 } else {
     if (scriptArg) console.error(`No file "${scriptArg}" here and no script by that name in ${scriptDirs.join("/ or ")}/\n`);
     console.error("Usage: cvdesk <script name or file path> [arguments]");
@@ -35,8 +53,8 @@ if (scriptArg && isFile(path.resolve(scriptArg))) {
     for (const dir of scriptDirs) {
         console.error(`\nScripts in ${dir}/:`);
         const scripts = scriptsIn(dir);
-        if (scripts.length === 0) console.error("  (none yet)");
-        for (const s of scripts) console.error(`  ${s}`);
+        if (scripts.size === 0) console.error("  (none yet)");
+        for (const s of scripts.keys()) console.error(`  ${s}`);
     }
     process.exit(1);
 }
@@ -45,6 +63,8 @@ const insideProject = !path.relative(projectDir, file).startsWith("..");
 const configPath = ts.findConfigFile(projectDir, ts.sys.fileExists)!;
 const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
 const { options } = ts.parseJsonConfigFileContent(config, ts.sys, projectDir);
+// Lets plain .js/.mjs scripts through the check (syntax and imports only, since checkJs stays off).
+options.allowJs = true;
 
 // Resolve @types and error paths from the project, not from wherever the command was run.
 const host = ts.createCompilerHost(options);

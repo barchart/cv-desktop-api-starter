@@ -60,7 +60,7 @@ or, from inside this `typescript` folder, `npm start`.
 
 ## Your own scripts
 Put any number of `.ts` files in `my-scripts/` and run each one from any folder,
-with optional arguments:
+with optional arguments. Plain JavaScript files (`.js`, `.mjs`) work too:
 ```bash
 cvdesk my-script arg1 arg2
 cvdesk                # lists the scripts in my-scripts/ and examples/
@@ -80,6 +80,9 @@ the same type check and settings.
 
 `cvdesk` type-checks that script (and anything it imports) first, and only runs it
 if there are no type errors. Errors in other scripts do not block it.
+JavaScript scripts are only checked for syntax errors and missing imports, not
+types. If `my-script.ts` and `my-script.js` are both there, `cvdesk my-script`
+runs the `.ts` one; give the path to run the other.
 For quick iteration without the check, `npx tsx watch my-scripts/my-script.ts`
 re-runs the script on every save (`npm run typecheck` checks types on demand).
 
