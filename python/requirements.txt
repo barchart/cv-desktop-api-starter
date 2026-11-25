@@ -1,2 +1,4 @@
 # OpenFeed Python SDK
 openfeed>=1.4.0
+# Barchart Desktop SDK (needs Python 3.11+)
+barchart-desktop-sdk>=0.1.0

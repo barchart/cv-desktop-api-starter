@@ -11,6 +11,10 @@ typescript/.cvdesk-installed.json
 
 # Python
 python/venv/
+python/my-scripts/
+python/previous-version/
+python/src/
+python/.cvdesk-installed.json
 python/__pycache__/
 python/**/__pycache__/
 *.pyc

@@ -12,7 +12,7 @@ from collections import defaultdict
 try:
     import openfeed
 except ImportError:
-    print("Please install openfeed: pip install -r requirements.txt")
+    print("The openfeed package is missing - run the setup script in the python folder again.")
     sys.exit(1)
 
 # Configuration - replace with your cmdtyView Desktop API credentials
