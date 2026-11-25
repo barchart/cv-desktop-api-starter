@@ -36,6 +36,13 @@ csharp/.cvdesk-installed
 csharp/**/bin/
 csharp/**/obj/
 
+# Whole project (update.command / update.bat at the top)
+/previous-version/
+/.cvdesk-installed
+
 # OS
 .DS_Store
 Thumbs.db
+
+# Editor
+.vscode/

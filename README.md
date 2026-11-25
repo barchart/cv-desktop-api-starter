@@ -59,3 +59,55 @@ Before running, open the starter script and replace the `YOUR_USERNAME` /
 `YOUR_PASSWORD` placeholders with your cmdtyView Desktop API
 credentials - each language's README shows which file. Don't commit your real
 credentials to git.
+
+## Getting the newest version
+
+To update every language folder at once, run this from the top folder of the project
+(the one with this README):
+```bash
+./update.command   # macOS
+.\update.bat       # Windows
+```
+It downloads the newest version once and updates each folder the same way that folder's
+own update does (see below). TypeScript and Python are only updated if you ran their setup,
+since their update also updates their dependencies; Java, Go and C# are always updated.
+At the end it lists which folders it updated or skipped.
+
+Or update just one language folder:
+
+| Language | Update (from any folder) | Update (from inside the language folder) |
+|----------|--------------------------|------------------------------------------|
+| [TypeScript](typescript/README.md#getting-the-newest-version) | `cvdesk update` | |
+| [Python](python/README.md#getting-the-newest-version) | `cvdesk-py update` | |
+| [Java](java/README.md#getting-the-newest-version) | | `./update.command` (macOS), `.\update.bat` (Windows) |
+| [Go](go/README.md#getting-the-newest-version) | | `./update.command` (macOS), `.\update.bat` (Windows) |
+| [C#](csharp/README.md#getting-the-newest-version) | | `./update.command` (macOS), `.\update.bat` (Windows) |
+
+Each one updates only its own language folder, and they all work the same way:
+- They install the latest GitHub release of this project, or the main branch if
+  there are no releases. Adding `--from <zip>` installs a zip you downloaded yourself.
+- `.env`, installed dependencies, build output and files you added are never touched.
+  In TypeScript and Python, your own scripts go in `my-scripts/`, which updates never touch.
+- The example code is replaced with its newest version. In TypeScript and Python,
+  an example you changed is moved into `my-scripts/` first.
+- Every file an update replaces or removes is saved in `previous-version/`.
+
+### For maintainers: how updates stay working
+
+The updater in a user's copy only downloads the new version. It then runs the
+install step **from the downloaded version** (`scripts/install-update.mjs`,
+`scripts/install_update.py`, or `scripts/install-update.sh` / `.ps1`), so changes
+to how a folder is installed reach users with the release that makes them. Two
+rules keep this working:
+- Never rename or remove the install step, and keep accepting its arguments
+  (`<new folder> <project folder> <version name> [<notes or release URL>]`).
+  Copies already out there call it exactly like that.
+- Keep the downloading part (`update.mjs`, `update.py`, `update.sh` / `.ps1`)
+  simple and stable. A change to it only reaches users after they have updated once.
+- The top-level `update.command` / `update.bat` follow the same pattern: `scripts/update.sh`
+  / `.ps1` downloads, then the downloaded `scripts/install-update.sh` / `.ps1` updates the
+  top-level files and runs each language's install step. A new language folder only needs
+  adding there.
+- Updaters replace their own files while they run. Bash and `cmd` read a script while
+  running it, so keep every `update.sh` inside its `{ ... exit }` block, and keep the
+  last command of every `.bat` / `.cmd` on the same line as its `& exit /b`.
