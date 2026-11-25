@@ -36,6 +36,27 @@ Do the same in any new script you add.
 ./mvnw -q compile exec:java
 ```
 
+## Getting the newest version
+From inside this `java` folder:
+```bash
+./update.command        # macOS
+.\update.bat            # Windows (PowerShell)
+```
+This downloads the newest version of the project from GitHub (the latest
+release, or the main branch if there are no releases) and installs it over
+this folder. It leaves build output, `.env` and files you added alone. Every
+file it replaces or removes is saved in `previous-version/` first.
+
+The update replaces the example code too, so if you added your credentials to
+`src/main/java/com/barchart/openfeed/StartGuide.java`, copy them from the same file in `previous-version/`
+afterwards. The update lists the files you had changed.
+
+If you downloaded the project as a zip yourself (GitHub's **Code -> Download ZIP**),
+install it with:
+```bash
+./update.command --from ~/Downloads/cv-desktop-api-starter-main.zip
+```
+
 ## Troubleshooting
 - "Invalid credentials" or login rejected -> check the username and password
   you entered in `src/main/java/com/barchart/openfeed/StartGuide.java`.

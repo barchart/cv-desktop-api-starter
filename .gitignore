@@ -17,12 +17,18 @@ python/**/__pycache__/
 
 # Java
 java/target/
+java/previous-version/
+java/.cvdesk-installed
 
 # Go
+go/previous-version/
+go/.cvdesk-installed
 go/start-guide
 go/cmd/start-guide/start-guide
 
 # C#
+csharp/previous-version/
+csharp/.cvdesk-installed
 csharp/**/bin/
 csharp/**/obj/
 
