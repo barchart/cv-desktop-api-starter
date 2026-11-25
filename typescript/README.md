@@ -44,6 +44,8 @@ project's `bin/` folder to your PATH: in `~/.zshrc` on macOS, in your user
 environment variables on Windows. `cvdesk` uses whichever Node.js version is
 active, so switching versions with fnm or nvm doesn't affect it. Open a new
 terminal window afterwards to use it. If you move this folder, run setup again.
+If you have more than one copy of this project, `cvdesk` runs the one you last
+ran setup in.
 
 ## Add your credentials
 Copy [examples/start-guide.ts](examples/start-guide.ts) into `my-scripts/`, open the

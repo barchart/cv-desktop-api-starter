@@ -35,11 +35,22 @@ echo "Adding the cvdesk command to your PATH..."
 chmod +x bin/cvdesk
 PROFILE="$HOME/.zshrc"
 [ "$(basename "$SHELL")" = "bash" ] && PROFILE="$HOME/.bash_profile"
-PATH_LINE="export PATH=\"$(pwd)/bin:\$PATH\""
-if ! grep -qxF "$PATH_LINE" "$PROFILE" 2>/dev/null; then
-  printf '\n# cmdtyView Desktop API TypeScript starter: cvdesk command\n%s\n' "$PATH_LINE" >> "$PROFILE"
-  echo "Added $(pwd)/bin to your PATH in $PROFILE"
+MARKER="# cmdtyView Desktop API TypeScript starter: cvdesk command"
+# The copy of this project you last ran setup in wins: remove the PATH lines earlier setups
+# added (for this or any other copy), then add this one at the end, where it comes first.
+if [ -f "$PROFILE" ]; then
+  CLEANED="$(awk -v marker="$MARKER" '
+    skip { skip = 0; if (index($0, "export PATH=") == 1) next }
+    $0 == marker { pending = 0; skip = 1; next }
+    { if (pending) print ""; pending = 0 }
+    $0 == "" { pending = 1; next }
+    { print }
+    END { if (pending) print "" }' "$PROFILE")"
+  # Rewrite in place (not mv), so a profile that is a symlink stays one.
+  printf '%s\n' "$CLEANED" > "$PROFILE"
 fi
+printf '\n%s\nexport PATH="%s/bin:$PATH"\n' "$MARKER" "$(pwd)" >> "$PROFILE"
+echo "cvdesk now runs from $(pwd) (set in $PROFILE)"
 
 echo
 echo "Setup complete!"
