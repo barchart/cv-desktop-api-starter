@@ -9,7 +9,7 @@ export const projectDir = path.dirname(path.dirname(fileURLToPath(import.meta.ur
 export const myScriptsDir = path.join(projectDir, "my-scripts");
 export const examplesDir = path.join(projectDir, "examples");
 export const backupDir = path.join(projectDir, "previous-version");
-const installedFile = path.join(projectDir, ".cvdesk-installed.json");
+const installedFile = ".cvdesk-installed.json";
 
 // Never replaced or removed by an update. src/ is where older versions kept scripts.
 const yours = new Set(["my-scripts", "node_modules", "previous-version", "src", ".env", ".cvdesk-installed.json"]);
@@ -37,16 +37,16 @@ export function hashProjectFiles(dir = projectDir) {
 }
 
 // What the last setup or update installed: { version, files: { "path": sha256 } }.
-export function readInstalled() {
+export function readInstalled(dir = projectDir) {
     try {
-        return JSON.parse(fs.readFileSync(installedFile, "utf8"));
+        return JSON.parse(fs.readFileSync(path.join(dir, installedFile), "utf8"));
     } catch {
         return undefined;
     }
 }
 
-export function writeInstalled(installed) {
-    fs.writeFileSync(installedFile, JSON.stringify(installed, null, 2) + "\n");
+export function writeInstalled(installed, dir = projectDir) {
+    fs.writeFileSync(path.join(dir, installedFile), JSON.stringify(installed, null, 2) + "\n");
 }
 
 // name if it's free in dir, otherwise name-2, name-3, ... (before the extension).

@@ -6,15 +6,16 @@
 // - If you changed one of the examples, your version is moved to my-scripts/.
 // `cvdesk update --from <file>` installs a .zip or .tar.gz of the project you
 // downloaded yourself, for example from GitHub's "Download ZIP".
-// Plain JavaScript run with node (not tsx), since it may reinstall node_modules.
+// This file only downloads. The installing is done by install-update.mjs from the
+// version it downloads, so each new version brings its own install steps. Keep
+// this file simple: copies of it already out there have to keep working with
+// every future version.
+// Plain JavaScript run with node (not tsx), since the install step may reinstall node_modules.
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import {
-    projectDir, myScriptsDir, backupDir,
-    listProjectFiles, hashFile, hashProjectFiles, readInstalled, writeInstalled, freeName,
-} from "./project-files.mjs";
+import { projectDir, readInstalled } from "./project-files.mjs";
 
 const repo = "barchart/cv-desktop-api-starter";
 const folderInRepo = "typescript";
@@ -24,7 +25,6 @@ const fail = (message) => {
     process.exit(1);
 };
 const isFile = (p) => fs.statSync(p, { throwIfNoEntry: false })?.isFile() ?? false;
-const isDir = (p) => fs.statSync(p, { throwIfNoEntry: false })?.isDirectory() ?? false;
 
 const args = process.argv.slice(2);
 const fromIndex = args.indexOf("--from");
@@ -54,18 +54,10 @@ if (fromIndex >= 0) {
 }
 
 const newDir = extract(archive);
-const changes = install(newDir);
-writeInstalled({ version, files: hashProjectFiles(newDir) });
-report(changes);
-if (changes.count > 0 || isDir(path.join(projectDir, "src"))) {
-    // The setup script that just arrived: npm install, move old scripts out of src/.
-    const setup = spawnSync(process.execPath, [path.join(projectDir, "scripts", "project-setup.mjs")], { stdio: "inherit" });
-    if (setup.status !== 0) fail("\nThe files were updated, but setting them up failed. Run the setup script again.");
-}
-if (changes.count > 0) {
-    console.log(`\nUpdated to ${version}.`);
-    if (notes) console.log(`\nWhat's new:\n${notes}`);
-}
+// The new version's own install step (see install-update.mjs for the arguments).
+const install = [path.join(newDir, "scripts", "install-update.mjs"), newDir, projectDir, version, ...(notes ? [notes] : [])];
+const result = spawnSync(process.execPath, install, { stdio: "inherit" });
+process.exitCode = result.status ?? 1;
 
 // The latest release, or the newest commit on the main branch if there are no releases.
 async function findLatest() {
@@ -109,76 +101,7 @@ function extract(file) {
     // GitHub's archives hold one folder with the whole project; this one is in typescript/ inside it.
     const candidates = [out, ...fs.readdirSync(out).map((name) => path.join(out, name))]
         .flatMap((dir) => [dir, path.join(dir, folderInRepo)]);
-    const found = candidates.find((dir) => isFile(path.join(dir, "scripts", "update.mjs")) && isFile(path.join(dir, "package.json")));
+    const found = candidates.find((dir) => isFile(path.join(dir, "scripts", "install-update.mjs")) && isFile(path.join(dir, "package.json")));
     if (!found) fail(`${name} doesn't contain this project.`);
     return found;
-}
-
-// Copies the new version's files over this folder and removes the ones it no longer has.
-function install(newDir) {
-    const installed = readInstalled()?.files ?? {};
-    const changes = { count: 0, keptEdits: [], replacedEdits: [] };
-    let backupStarted = false;
-    const backUp = (rel) => {
-        if (!backupStarted) {
-            fs.rmSync(backupDir, { recursive: true, force: true });
-            backupStarted = true;
-        }
-        copy(path.join(projectDir, rel), path.join(backupDir, rel));
-    };
-
-    const newFiles = listProjectFiles(newDir);
-    for (const rel of newFiles) {
-        const local = path.join(projectDir, rel);
-        const incoming = path.join(newDir, rel);
-        if (isFile(local)) {
-            const localHash = hashFile(local);
-            if (localHash === hashFile(incoming)) continue;
-            backUp(rel);
-            // Changed since setup or the last update, so by you (or by setup, for package*.json).
-            const edited = rel in installed && installed[rel] !== localHash;
-            if (edited && rel.startsWith("examples/")) {
-                fs.mkdirSync(myScriptsDir, { recursive: true });
-                const name = freeName(myScriptsDir, path.basename(rel));
-                copy(local, path.join(myScriptsDir, name));
-                changes.keptEdits.push({ rel, name });
-            } else if (edited && !rel.startsWith("package")) {
-                changes.replacedEdits.push(rel);
-            }
-        }
-        copy(incoming, local);
-        changes.count++;
-    }
-
-    const stillThere = new Set(newFiles);
-    for (const rel of Object.keys(installed)) {
-        const local = path.join(projectDir, rel);
-        if (stillThere.has(rel) || !isFile(local)) continue;
-        backUp(rel);
-        fs.rmSync(local);
-        changes.count++;
-    }
-    return changes;
-}
-
-function copy(from, to) {
-    fs.mkdirSync(path.dirname(to), { recursive: true });
-    fs.copyFileSync(from, to);
-}
-
-function report({ count, keptEdits, replacedEdits }) {
-    if (count === 0) {
-        console.log(`Already up to date (${version}).`);
-        return;
-    }
-    console.log(`\n${count} file(s) updated. The previous versions are saved in previous-version/.`);
-    for (const { rel, name } of keptEdits) {
-        const script = path.basename(name, path.extname(name));
-        console.log(`\nYou had changed ${rel}. Your version is now my-scripts/${name}`);
-        console.log(`(run it with: cvdesk ${script}), and ${rel} is the new version.`);
-    }
-    if (replacedEdits.length > 0) {
-        console.log("\nYou had changed these project files. They were replaced; your versions are in previous-version/:");
-        for (const rel of replacedEdits) console.log(`  ${rel}`);
-    }
 }

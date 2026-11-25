@@ -1,2 +1,2 @@
 @echo off
-node "%~dp0cvdesk" %*
+node "%~dp0cvdesk" %* & exit /b
