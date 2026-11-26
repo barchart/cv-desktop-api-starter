@@ -1,5 +1,3 @@
-package com.barchart.openfeed;
-
 import org.openfeed.ExchangeResponse;
 import org.openfeed.HeartBeat;
 import org.openfeed.InstrumentAction;

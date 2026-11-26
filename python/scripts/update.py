@@ -1,10 +1,10 @@
-"""`cvdesk-py update`: downloads the newest version of this project from GitHub and
+"""`cvdesk update python`: downloads the newest version of this project from GitHub and
 installs it over this folder, without touching your own files (my-scripts/,
 .env, venv/). It takes the latest GitHub release, or the main branch if the
 project has no releases.
 - Every file it replaces or removes is saved in previous-version/ first.
 - If you changed one of the examples, your version is moved to my-scripts/.
-`cvdesk-py update --from <file>` installs a .zip or .tar.gz of the project you
+`cvdesk update python --from <file>` installs a .zip or .tar.gz of the project you
 downloaded yourself, for example from GitHub's "Download ZIP".
 This file only downloads. The installing is done by install_update.py from the
 version it downloads, so each new version brings its own install steps. Keep
@@ -113,7 +113,7 @@ def main() -> None:
             index = args.index("--from")
             source = Path(args[index + 1]).expanduser().resolve() if index + 1 < len(args) else None
             if source is None or not source.is_file():
-                fail("Usage: cvdesk-py update --from <downloaded .zip or .tar.gz file>")
+                fail("Usage: cvdesk update python --from <downloaded .zip or .tar.gz file>")
             archive, version, name = source, f"file {source.name}", str(source)
         else:
             print("Checking for a new version...")

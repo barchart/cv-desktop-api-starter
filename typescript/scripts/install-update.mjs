@@ -12,6 +12,9 @@
 // - Every file it replaces or removes is saved in previous-version/ first.
 // - If you changed one of the examples, your version is moved to my-scripts/.
 // - Then runs the new version's project-setup.mjs (npm install, move old scripts out of src/).
+// - Puts the cvdesk command for every language on PATH, if it isn't yet. A copy of
+//   the project without it yet gets the whole project updated instead (see
+//   handOverToWholeProject).
 // Plain JavaScript run with node (not tsx), since it may reinstall node_modules.
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -30,6 +33,8 @@ const fail = (message) => {
 const isFile = (p) => fs.statSync(p, { throwIfNoEntry: false })?.isFile() ?? false;
 const isDir = (p) => fs.statSync(p, { throwIfNoEntry: false })?.isDirectory() ?? false;
 
+const handedOver = handOverToWholeProject();
+if (handedOver !== null) process.exit(handedOver);
 const changes = install();
 writeInstalled({ version, files: hashProjectFiles(newDir) }, projectDir);
 report(changes);
@@ -41,6 +46,34 @@ if (changes.count > 0 || isDir(path.join(projectDir, "src"))) {
 if (changes.count > 0) {
     console.log(`\nUpdated to ${version}.`);
     if (notes) console.log(`\nWhat's new:\n${notes}`);
+}
+putCvdeskOnPath();
+
+// The cvdesk command for every language comes with the files at the top of the
+// project (bin/). A copy that doesn't have those yet gets the whole project updated
+// instead of only this folder, from the same download (GitHub's archives hold the
+// whole project). Returns that update's exit code, or null to update only this folder.
+function handOverToWholeProject() {
+    const newRoot = path.dirname(newDir);
+    const root = path.dirname(projectDir);
+    if (isFile(path.join(root, "bin", "cvdesk")) || !isFile(path.join(newRoot, "bin", "cvdesk"))) return null;
+    // Only inside a copy of the whole project, never wherever this folder was moved to.
+    if (path.basename(projectDir) !== "typescript" || !["python", "java", "go", "csharp"].some((d) => isDir(path.join(root, d)))) return null;
+    console.log("This version has cvdesk, one command for the scripts of every language, which comes");
+    console.log("with the files at the top of the project. So this updates the whole project.");
+    const install = process.platform === "win32"
+        ? ["powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(newRoot, "scripts", "install-update.ps1")]]
+        : ["bash", [path.join(newRoot, "scripts", "install-update.sh")]];
+    return spawnSync(install[0], [...install[1], newRoot, root, version], { stdio: "inherit" }).status ?? 1;
+}
+
+function putCvdeskOnPath() {
+    const root = path.dirname(projectDir);
+    if (!isFile(path.join(root, "bin", "cvdesk"))) return;
+    const add = process.platform === "win32"
+        ? ["powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(root, "scripts", "add-to-path.ps1")]]
+        : ["bash", [path.join(root, "scripts", "add-to-path.sh")]];
+    spawnSync(add[0], [...add[1], "--if-needed"], { stdio: "inherit" });
 }
 
 // Copies the new version's files over the project and removes the ones it no longer has.
@@ -102,9 +135,8 @@ function report({ count, keptEdits, replacedEdits }) {
     }
     console.log(`\n${count} file(s) updated. The previous versions are saved in previous-version/.`);
     for (const { rel, name } of keptEdits) {
-        const script = path.basename(name, path.extname(name));
         console.log(`\nYou had changed ${rel}. Your version is now my-scripts/${name}`);
-        console.log(`(run it with: cvdesk ${script}), and ${rel} is the new version.`);
+        console.log(`(run it with: cvdesk ${name}), and ${rel} is the new version.`);
     }
     if (replacedEdits.length > 0) {
         console.log("\nYou had changed these project files. They were replaced; your versions are in previous-version/:");

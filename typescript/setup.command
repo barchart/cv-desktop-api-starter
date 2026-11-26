@@ -31,31 +31,19 @@ echo "Found node $(node --version)"
 node scripts/project-setup.mjs
 
 echo
-echo "Adding the cvdesk command to your PATH..."
-chmod +x bin/cvdesk
-PROFILE="$HOME/.zshrc"
-[ "$(basename "$SHELL")" = "bash" ] && PROFILE="$HOME/.bash_profile"
-MARKER="# cmdtyView Desktop API TypeScript starter: cvdesk command"
-# The copy of this project you last ran setup in wins: remove the PATH lines earlier setups
-# added (for this or any other copy), then add this one at the end, where it comes first.
-if [ -f "$PROFILE" ]; then
-  CLEANED="$(awk -v marker="$MARKER" '
-    skip { skip = 0; if (index($0, "export PATH=") == 1) next }
-    $0 == marker { pending = 0; skip = 1; next }
-    { if (pending) print ""; pending = 0 }
-    $0 == "" { pending = 1; next }
-    { print }
-    END { if (pending) print "" }' "$PROFILE")"
-  # Rewrite in place (not mv), so a profile that is a symlink stays one.
-  printf '%s\n' "$CLEANED" > "$PROFILE"
+if [ -f ../scripts/add-to-path.sh ] && [ -f ../bin/cvdesk ]; then
+  echo "Adding the cvdesk command to your PATH..."
+  bash ../scripts/add-to-path.sh
+else
+  echo "To get the cvdesk command, update the whole project once with ../update.command,"
+  echo "then run this setup again."
 fi
-printf '\n%s\nexport PATH="%s/bin:$PATH"\n' "$MARKER" "$(pwd)" >> "$PROFILE"
-echo "cvdesk now runs from $(pwd) (set in $PROFILE)"
 
 echo
 echo "Setup complete!"
 echo "To run the starter guide, open a new terminal window and run:"
-echo "  cvdesk start-guide"
+echo "  cvdesk start-guide.ts"
 echo "Put your own scripts in the my-scripts folder. To get the newest version"
 echo "of this project later, run: cvdesk update"
-read -r -p "Press Enter to close..." _
+# Run by the setup.command at the top of the project, which pauses once at the end.
+[ -n "$CVDESK_SETUP_FROM_TOP" ] || read -r -p "Press Enter to close..." _

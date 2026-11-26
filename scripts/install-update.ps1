@@ -7,13 +7,14 @@
 # These arguments are a contract: copies of update.ps1 already out there call
 # every future version of this script exactly like this.
 #
-# - Updates the files at the top of the project (README.md, update.bat, scripts\).
+# - Updates the files at the top of the project (README.md, update.bat, bin\, scripts\).
 # - Then runs each language folder's own install step from the download, the same
 #   one that folder's own update runs:
 #   - TypeScript and Python only if you ran their setup, since their update also
 #     updates their dependencies (node_modules, venv).
 #   - Java, Go and C# always: they have nothing to set up.
 # - Records the version in .cvdesk-installed.
+# - Puts the cvdesk command on PATH, if it isn't yet.
 $ErrorActionPreference = 'Stop'
 $new = (Resolve-Path -LiteralPath $args[0]).Path
 $project = (Resolve-Path -LiteralPath $args[1]).Path
@@ -46,8 +47,10 @@ $backup = Join-Path $project 'previous-version'
 $backedUp = $false
 $count = 0
 $files = @(Get-ChildItem -LiteralPath $new -File -Force)
-$scriptsDir = Join-Path $new 'scripts'
-if (Test-Path -LiteralPath $scriptsDir) { $files += @(Get-ChildItem -LiteralPath $scriptsDir -File -Recurse -Force) }
+foreach ($sub in @('bin', 'scripts')) {
+    $subDir = Join-Path $new $sub
+    if (Test-Path -LiteralPath $subDir) { $files += @(Get-ChildItem -LiteralPath $subDir -File -Recurse -Force) }
+}
 foreach ($file in $files) {
     if ($file.Name -eq '.DS_Store' -or $file.Name -eq 'Thumbs.db') { continue }
     $rel = $file.FullName.Substring($new.Length).TrimStart('\', '/')
@@ -119,4 +122,10 @@ if ($failed) {
 }
 [IO.File]::WriteAllText((Join-Path $project '.cvdesk-installed'), "version $version`n")
 if ($url) { Write-Host "What's new: $url" }
+# The cvdesk command, which replaces the cvdesk-py command and the TypeScript-only
+# cvdesk of earlier versions: put it on PATH, if it isn't yet.
+$addToPath = Join-Path $project 'scripts\add-to-path.ps1'
+if (Test-Path -LiteralPath $addToPath) {
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $addToPath --if-needed
+}
 exit 0

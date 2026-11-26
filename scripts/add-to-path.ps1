@@ -1,11 +1,15 @@
 # Puts this project's bin\ folder first on your user PATH, so the cvdesk command
-# works in any new terminal, whichever Node.js version is active. Called by setup.bat.
+# works in any new terminal. Called by every language's setup.bat, and with
+# --if-needed by updates (which then change nothing, quietly, if it is already
+# set up for this copy).
 # The copy of this project you last ran setup in wins: entries for other copies
-# (folders with the same commands in them) are removed.
+# (folders with the same commands in them, including typescript\bin, which older
+# versions added, and python\bin, where the cvdesk-py command that cvdesk
+# replaces was) are removed.
 # The PATH is read and written as stored in the registry, so entries such as
 # %USERPROFILE%\... stay as they are and keep working.
 $bin = (Resolve-Path "$PSScriptRoot\..\bin").Path
-$commands = @(Get-ChildItem -Path $bin -Filter *.cmd | ForEach-Object Name)
+$commands = @(Get-ChildItem -Path $bin -Filter *.cmd | ForEach-Object Name) + @('cvdesk-py.cmd')
 
 $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $true)
 $current = $key.GetValue('Path', '', 'DoNotExpandEnvironmentNames')
@@ -36,5 +40,6 @@ public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wP
 }
 $key.Close()
 
-$names = ($commands | ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_) }) -join ', '
-Write-Host "$names now runs from $(Split-Path $bin)"
+if ($updated -ne $current -or $args -notcontains '--if-needed') {
+    Write-Host "cvdesk now runs from $(Split-Path $bin). Open a new PowerShell window to use it."
+}

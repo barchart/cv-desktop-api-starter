@@ -1,0 +1,223 @@
+#!/usr/bin/env bash
+# The cvdesk command, for every language in this project:
+#   cvdesk <script> [arguments]       runs a script; its extension picks the language:
+#                                     .ts .js .mjs (TypeScript), .py (Python), .java (Java),
+#                                     .go (Go), .cs (C#)
+#   cvdesk update [--from <file>]     updates every language folder (see scripts/update.sh)
+#   cvdesk update <language> [...]    updates one: typescript, python, java, go or csharp
+#   cvdesk                            lists the scripts
+# A script is a file path, or the name of a script in <language>/my-scripts/ or
+# <language>/examples/ (my-scripts/ wins). Names ignore case, "-" and "_", so
+# start-guide, start_guide and StartGuide are the same script. Without an
+# extension, the name must belong to only one language that is set up.
+# Every language's setup adds this bin/ folder to PATH. On Windows, cvdesk.cmd
+# next to this file is what the terminal runs (see scripts/cvdesk.ps1, which
+# does the same as this file: keep them in step).
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+LANGS="typescript python java go csharp"
+
+fail() {
+  echo "$1" >&2
+  exit 1
+}
+
+lang_name() {
+  case "$1" in
+    typescript) echo TypeScript ;; python) echo Python ;; java) echo Java ;; go) echo Go ;; csharp) echo "C#" ;;
+  esac
+}
+
+# The file extensions of a language, in order of preference when one name has several.
+lang_exts() {
+  case "$1" in
+    typescript) echo "ts js mjs" ;; python) echo py ;; java) echo java ;; go) echo go ;; csharp) echo cs ;;
+  esac
+}
+
+lang_of_ext() {
+  case "$1" in
+    ts | js | mjs) echo typescript ;; py) echo python ;; java) echo java ;; go) echo go ;; cs) echo csharp ;;
+    *) return 1 ;;
+  esac
+}
+
+# Whether a language is ready to run scripts: its setup ran, or its tools are installed.
+ready() {
+  case "$1" in
+    typescript) [ -f "$ROOT/typescript/node_modules/tsx/dist/cli.mjs" ] && command -v node > /dev/null ;;
+    python) [ -x "$ROOT/python/venv/bin/python" ] ;;
+    # Run, not just found: macOS has a /usr/bin/java placeholder even without a JDK.
+    java) java -version > /dev/null 2>&1 ;;
+    go) command -v go > /dev/null ;;
+    # Running single .cs files needs .NET 10.
+    csharp) command -v dotnet > /dev/null && [ "$(dotnet --version 2> /dev/null | cut -d . -f 1)" -ge 10 ] 2> /dev/null ;;
+  esac
+}
+
+not_ready() {
+  echo "$(lang_name "$1") isn't set up yet. Run its setup first: $ROOT/$1/setup.command"
+}
+
+normalize() {
+  printf '%s' "$1" | tr 'A-Z' 'a-z' | tr -d '_-'
+}
+
+# The script in a language's my-scripts/ or examples/ whose name matches (prints its path).
+find_in() {
+  local lang="$1" wanted="$2" exts="${3:-$(lang_exts "$1")}" dir ext file stem
+  for dir in my-scripts examples; do
+    for ext in $exts; do
+      for file in "$ROOT/$lang/$dir"/*."$ext"; do
+        [ -f "$file" ] || continue
+        stem="$(basename "$file" ".$ext")"
+        if [ "$(normalize "$stem")" = "$wanted" ]; then
+          echo "$file"
+          return 0
+        fi
+      done
+    done
+  done
+  return 1
+}
+
+usage() {
+  local lang dir ext file names
+  {
+    echo "Usage: cvdesk <script> [arguments]    runs a script from my-scripts/ or examples/"
+    echo "       cvdesk update                  installs the newest version of every language folder"
+    echo "       cvdesk update <language>       ...of one: typescript, python, java, go or csharp"
+    for lang in $LANGS; do
+      [ -d "$ROOT/$lang" ] || continue
+      echo
+      if ready "$lang"; then
+        echo "$(lang_name "$lang") ($lang/):"
+      else
+        echo "$(lang_name "$lang") ($lang/) - not set up yet, run $lang/setup.command:"
+      fi
+      for dir in my-scripts examples; do
+        names=""
+        for ext in $(lang_exts "$lang"); do
+          for file in "$ROOT/$lang/$dir"/*."$ext"; do
+            case "$file" in *.d.ts) continue ;; esac
+            [ -f "$file" ] && names="$names  $(basename "$file")"
+          done
+        done
+        printf '  %-12s%s\n' "$dir/" "${names:-  (none yet)}"
+      done
+    done
+  } >&2
+}
+
+run() {
+  local lang="$1" file="$2"
+  shift 2
+  case "$lang" in
+    typescript)
+      exec node "$ROOT/typescript/node_modules/tsx/dist/cli.mjs" "$ROOT/typescript/scripts/run.ts" "$file" "$@" ;;
+    python)
+      exec "$ROOT/python/venv/bin/python" "$ROOT/python/scripts/run.py" "$file" "$@" ;;
+    java)
+      # The libraries pom.xml lists, copied into lib/ (again whenever pom.xml changes).
+      bash "$ROOT/java/scripts/dependencies.sh" --if-needed || exit 1
+      exec java -cp "$ROOT/java/lib/*:$ROOT/java/resources" "$file" "$@" ;;
+    go)
+      # Built inside the go/ module (for its go.mod), then run from the folder you're in.
+      local tmp status
+      tmp="$(mktemp -d)"
+      trap 'rm -rf "$tmp"' EXIT
+      (cd "$ROOT/go" && go build -o "$tmp/$(basename "$file" .go)" "$file") || exit 1
+      "$tmp/$(basename "$file" .go)" "$@"
+      status=$?
+      exit $status ;;
+    csharp)
+      exec dotnet run --file "$file" -- "$@" ;;
+  esac
+}
+
+if [ "$1" = "update" ]; then
+  shift
+  case "$1" in
+    "" | --from) exec bash "$ROOT/scripts/update.sh" "$@" ;;
+    typescript | ts)
+      shift
+      command -v node > /dev/null || fail "Node.js isn't installed."
+      exec node "$ROOT/typescript/scripts/update.mjs" "$@" ;;
+    python | py)
+      shift
+      [ -x "$ROOT/python/venv/bin/python" ] || fail "$(not_ready python)"
+      exec "$ROOT/python/venv/bin/python" "$ROOT/python/scripts/update.py" "$@" ;;
+    java | go) exec bash "$ROOT/$1/scripts/update.sh" "${@:2}" ;;
+    csharp | cs | "c#") exec bash "$ROOT/csharp/scripts/update.sh" "${@:2}" ;;
+    *) fail "Unknown language \"$1\". Use typescript, python, java, go or csharp, or nothing to update them all." ;;
+  esac
+fi
+
+if [ $# -eq 0 ]; then
+  usage
+  exit 1
+fi
+arg="$1"
+shift
+
+# A file path.
+if [ -f "$arg" ]; then
+  lang="$(lang_of_ext "${arg##*.}")" || fail "cvdesk runs .ts, .js, .mjs, .py, .java, .go and .cs files, and $arg is none of those."
+  ready "$lang" || fail "$(not_ready "$lang")"
+  run "$lang" "$(cd "$(dirname "$arg")" && pwd)/$(basename "$arg")" "$@"
+fi
+case "$arg" in
+  */*)
+    fail "No file \"$arg\"." ;;
+esac
+
+# A script name, with or without its extension.
+lang=""
+stem="$arg"
+case "$arg" in
+  *.*) lang="$(lang_of_ext "${arg##*.}")" && stem="${arg%.*}" ;;
+esac
+wanted="$(normalize "$stem")"
+
+if [ -n "$lang" ]; then
+  if ! file="$(find_in "$lang" "$wanted" "${arg##*.}")"; then
+    echo "No script \"$arg\" in $lang/my-scripts/ or $lang/examples/." >&2
+    echo >&2
+    usage
+    exit 1
+  fi
+  ready "$lang" || fail "$(not_ready "$lang")"
+  run "$lang" "$file" "$@"
+fi
+
+# No extension: look in every language. (Language names, not paths, so folders
+# with spaces in their names work.)
+found=""
+found_ready=""
+for l in $LANGS; do
+  find_in "$l" "$wanted" > /dev/null || continue
+  found="$found $l"
+  ready "$l" && found_ready="$found_ready $l"
+done
+set -- $found_ready "--" "$@"
+if [ "$1" != "--" ] && [ "$2" = "--" ]; then
+  lang="$1"
+  shift 2
+  run "$lang" "$(find_in "$lang" "$wanted")" "$@"
+fi
+if [ -z "$found" ]; then
+  echo "No script \"$arg\" in any language's my-scripts/ or examples/." >&2
+  echo >&2
+  usage
+  exit 1
+fi
+if [ -n "$found_ready" ]; then
+  echo "\"$arg\" is a script in more than one language. Add its extension to pick one:" >&2
+  for l in $found_ready; do
+    printf '  cvdesk %-24s(%s)\n' "$(basename "$(find_in "$l" "$wanted")")" "$(lang_name "$l")" >&2
+  done
+  exit 1
+fi
+for l in $found; do
+  echo "$(basename "$(find_in "$l" "$wanted")"): $(not_ready "$l")" >&2
+done
+exit 1

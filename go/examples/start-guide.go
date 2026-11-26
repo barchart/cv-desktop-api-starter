@@ -1,3 +1,9 @@
+//go:build ignore
+
+// The "ignore" build tag above lets every script in examples/ and my-scripts/
+// have its own main function: cvdesk builds and runs one file at a time.
+// Copy this line into your own scripts too.
+
 // Copyright 2026 Barchart.com, Inc. All rights reserved.
 // OpenFeed Start Guide - Go Implementation
 

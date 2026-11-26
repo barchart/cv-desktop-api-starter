@@ -1,4 +1,4 @@
-"""Which files in this folder belong to the project (replaced by `cvdesk-py update`)
+"""Which files in this folder belong to the project (replaced by `cvdesk update`)
 and which are yours (never touched). Used by project_setup.py and update.py.
 Standard library only, so it works before the venv exists."""
 

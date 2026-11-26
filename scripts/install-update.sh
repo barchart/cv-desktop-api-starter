@@ -8,13 +8,14 @@
 # These arguments are a contract: copies of update.sh already out there call
 # every future version of this script exactly like this.
 #
-# - Updates the files at the top of the project (README.md, update.command, scripts/).
+# - Updates the files at the top of the project (README.md, update.command, bin/, scripts/).
 # - Then runs each language folder's own install step from the download, the same
 #   one that folder's own update runs:
 #   - TypeScript and Python only if you ran their setup, since their update also
 #     updates their dependencies (node_modules, venv).
 #   - Java, Go and C# always: they have nothing to set up.
 # - Records the version in .cvdesk-installed.
+# - Puts the cvdesk command on PATH, if it isn't yet.
 set -e
 NEW="$(cd "$1" && pwd)"
 PROJECT="$(cd "$2" && pwd)"
@@ -63,7 +64,7 @@ while IFS= read -r rel; do
   mkdir -p "$PROJECT/$(dirname "$rel")"
   cp -p "$NEW/$rel" "$PROJECT/$rel"
   COUNT=$((COUNT + 1))
-done < <(cd "$NEW" && { find . -maxdepth 1 -type f; find scripts -type f; } | sed 's#^\./##' |
+done < <(cd "$NEW" && { find . -maxdepth 1 -type f; find bin scripts -type f 2> /dev/null; } | sed 's#^\./##' |
   grep -v -e '\.DS_Store$' -e 'Thumbs\.db$' | LC_ALL=C sort)
 if [ "$COUNT" -eq 0 ]; then
   echo "Already up to date."
@@ -114,3 +115,8 @@ if [ -n "$FAILED" ]; then
 fi
 echo "version $VERSION" > "$PROJECT/.cvdesk-installed"
 [ -z "$URL" ] || echo "What's new: $URL"
+# The cvdesk command, which replaces the cvdesk-py command and the TypeScript-only
+# cvdesk of earlier versions: put it on PATH, if it isn't yet.
+if [ -f "$PROJECT/scripts/add-to-path.sh" ]; then
+  bash "$PROJECT/scripts/add-to-path.sh" --if-needed
+fi

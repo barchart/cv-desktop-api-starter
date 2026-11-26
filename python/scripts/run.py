@@ -4,7 +4,7 @@ the current folder, or absolute) or the name of a script in my-scripts/ or
 examples/: `my_script`, `my_script.py`, or `my-script` for my_script.py.
 my-scripts/ wins if both have one. Without one, it lists the scripts.
 `run.py update` runs update.py instead, so a script named update.py can
-only be run by its path. Works from any directory, so the cvdesk-py command uses it."""
+only be run by its path. Works from any directory, so the cvdesk command uses it."""
 
 import subprocess
 import sys
@@ -34,8 +34,8 @@ def find_script(arg: str) -> Path | None:
 def usage(script_arg: str | None) -> None:
     if script_arg:
         print(f'No file "{script_arg}" here and no script by that name in {"/ or ".join(SCRIPT_DIRS)}/\n', file=sys.stderr)
-    print("Usage: cvdesk-py <script name or file path> [arguments]", file=sys.stderr)
-    print("       cvdesk-py update     (installs the newest version of this project)", file=sys.stderr)
+    print("Usage: cvdesk <script>.py [arguments]", file=sys.stderr)
+    print("       cvdesk update python     (installs the newest version of this folder)", file=sys.stderr)
     for directory in SCRIPT_DIRS:
         print(f"\nScripts in {directory}/:", file=sys.stderr)
         scripts = scripts_in(directory)

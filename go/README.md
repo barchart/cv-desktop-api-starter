@@ -1,61 +1,23 @@
-# Go Starter - Quick Notes
+# Go Starter
 
-## Source code
-The actual program is [cmd/start-guide/main.go](cmd/start-guide/main.go). Open
-it in any text editor or VS Code, change something, save, then re-run it with
-`go run ./cmd/start-guide` (see below) to see your change take effect.
+Setup, credentials, `cvdesk` and updating work the same in every language: see the
+[main README](../README.md). This page covers what's specific to Go.
 
-## Prerequisite
-Go 1.21+.
+## Needs
+Go 1.21+, from [go.dev/dl](https://go.dev/dl/).
 
-## First-time setup
-- **macOS**: open Terminal, `cd` into this `go` folder (see the root
-  [README](../README.md#getting-started-no-programming-experience-needed) if
-  you're not sure how), then run:
-  ```bash
-  ./setup.command
-  ```
-- **Windows**: open PowerShell, `cd` into this `go` folder (see the root
-  [README](../README.md#getting-started-no-programming-experience-needed) if
-  you're not sure how), then run:
-  ```powershell
-  .\setup.bat
-  ```
+## Examples
+In [examples/](examples/): [start-guide.go](examples/start-guide.go) (credentials:
+`username` / `password`).
 
-This checks your setup and runs `go mod download`.
-
-## Add your credentials
-Open [cmd/start-guide/main.go](cmd/start-guide/main.go) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
-(`username` and `password` - search the file for `YOUR_USERNAME`) with your cmdtyView Desktop API credentials.
-Do the same in any new script you add.
-
-## Run it
-```bash
-go run ./cmd/start-guide
-```
-
-## Getting the newest version
-From inside this `go` folder:
-```bash
-./update.command        # macOS
-.\update.bat            # Windows (PowerShell)
-```
-This downloads the newest version of the project from GitHub (the latest
-release, or the main branch if there are no releases) and installs it over
-this folder. It leaves build output, `.env` and files you added alone. Every
-file it replaces or removes is saved in `previous-version/` first.
-
-The update replaces the example code too, so if you added your credentials to
-`cmd/start-guide/main.go`, copy them from the same file in `previous-version/`
-afterwards. The update lists the files you had changed.
-
-If you downloaded the project as a zip yourself (GitHub's **Code -> Download ZIP**),
-install it with:
-```bash
-./update.command --from ~/Downloads/cv-desktop-api-starter-main.zip
-```
+## Writing scripts
+- Each script is one `.go` file with `package main` and a `main` function.
+- Start it with `//go:build ignore` and an empty line, like the examples: that lets
+  every script have its own `main` (`cvdesk` builds one file at a time).
+- Scripts use the packages in [go.mod](go.mod); add more with `go get` from this folder.
 
 ## Troubleshooting
-- "Invalid credentials" or login rejected -> check the username and password
-  you entered in `cmd/start-guide/main.go`.
-- Re-running the setup script is safe.
+- Login rejected -> check the credentials in `my-scripts/start-guide.go`.
+- `cvdesk: command not found` -> open a new terminal window, or run setup again.
+- Your start guide from an older version (in `cmd/start-guide/`) is moved into
+  `my-scripts/` by the update, if you had changed it.

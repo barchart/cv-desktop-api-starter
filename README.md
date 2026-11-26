@@ -1,113 +1,63 @@
 # cv-desktop-api-starter
 
-Starter examples for connecting to Barchart's cmdtyView Desktop API real-time market data service, available in Python, Node.js, Java, Go, and C#.
+Starter scripts for Barchart's cmdtyView Desktop API real-time market data, in
+TypeScript, Python, Java, Go and C#. Setting up the Desktop API app itself is a
+separate step: see the [official docs](https://docs.barchart.com/cmdtyview-docs/desktop-api/getting-started/).
 
-Setting up the Barchart Desktop API app itself is a separate step, done in parallel with this starter kit - see the official docs: https://docs.barchart.com/cmdtyview-docs/desktop-api/getting-started/
+## Getting started
+1. **Run the setup** in this folder (how: see below). It asks which language you
+   want, checks that it's installed (with a download link if not), installs what
+   the scripts need, and installs the `cvdesk` command.
 
-## New to reading `.md` files?
+   | Language | Folder | Needs |
+   |----------|--------|-------|
+   | [TypeScript](typescript/README.md) | `typescript/` | Node.js 22+ |
+   | [Python](python/README.md) | `python/` | Python 3.11+ (setup can install it) |
+   | [Java](java/README.md) | `java/` | JDK 17+ |
+   | [Go](go/README.md) | `go/` | Go 1.21+ |
+   | [C#](csharp/README.md) | `csharp/` | .NET SDK 10+ |
+2. **Open a new terminal window**, so it knows the `cvdesk` command.
+3. **Add your credentials:** copy the starter guide from the language folder's
+   `examples/` into its `my-scripts/`, and replace `YOUR_USERNAME` /
+   `YOUR_PASSWORD` in the copy. Don't commit real credentials to git.
+4. **Run it**, from any folder: `cvdesk start_guide.py` (or `start-guide.ts`,
+   `StartGuide.java`, `start-guide.go`, `start-guide.cs`).
 
-This README (and the ones inside each language folder) are Markdown files -
-that's why you see symbols like `#` and `**` in the raw text. To read them
-nicely formatted instead of as plain text:
-- **In VS Code**: click the file in the left-hand file list, then press
-  `Cmd+Shift+V` (macOS) or `Ctrl+Shift+V` (Windows) to open a formatted preview.
-- **On GitHub**: open the file in your browser - GitHub renders Markdown automatically.
-- Opening it in Notepad/TextEdit works too, it'll just show the raw `#`/`**` symbols.
-
-## Getting started (no programming experience needed)
-
-Each language has its own folder in this project (`python/`, `typescript/`, `java/`,
-`go/`, `csharp/`), and inside that folder is a setup script:
-
-| Language | Folder | macOS script | Windows script |
-|----------|--------|--------------|----------------|
-| [Python](python/README.md)  | `python/`  | `setup.command` | `setup.bat` |
-| [TypeScript](typescript/README.md) | `typescript/` | `setup.command` | `setup.bat` |
-| [Java](java/README.md)      | `java/`    | `setup.command` | `setup.bat` |
-| [Go](go/README.md)          | `go/`      | `setup.command` | `setup.bat` |
-| [C#](csharp/README.md)      | `csharp/`  | `setup.command` | `setup.bat` |
-
-**Windows**: run the script from PowerShell. Steps:
-1. Open **PowerShell** (press the Windows key, type `PowerShell`, press Enter).
-2. Move into the language folder. Type `cd ` (with a trailing space), then
-   drag that folder from File Explorer straight onto the PowerShell window -
-   it fills in the full path for you - then press Enter.
-3. Run the script:
-   ```powershell
-   .\setup.bat
-   ```
-
-**macOS**: run the script from Terminal rather than double-clicking it -
-double-clicking often gets blocked by macOS's Gatekeeper security ("cannot be
-opened because it is from an unidentified developer"), while running it from
-Terminal avoids that entirely. Steps:
-1. Open **Terminal** (press `Cmd+Space`, type `Terminal`, press Enter).
-2. Move into the language folder. Type `cd ` (with a trailing space), then
-   drag that folder from Finder straight onto the Terminal window - it fills
-   in the full path for you - then press Enter.
-3. Run the script:
-   ```bash
-   ./setup.command
-   ```
-
-Each script will:
-1. Check that the required runtime is installed, and print a download link if it's missing.
-2. Download/install the project's dependencies.
-3. Print the exact command to run the starter guide.
-
-Before running, open the starter script and replace the `YOUR_USERNAME` /
-`YOUR_PASSWORD` placeholders with your cmdtyView Desktop API
-credentials - each language's README shows which file. Don't commit your real
-credentials to git.
-
-## Getting the newest version
-
-To update every language folder at once, run this from the top folder of the project
-(the one with this README):
+**Running the setup.** Open Terminal (macOS: `Cmd+Space`, type Terminal) or
+PowerShell (Windows: Windows key, type PowerShell). Type `cd ` (with a space),
+drag this project's folder onto the window, press Enter, then run:
 ```bash
-./update.command   # macOS
-.\update.bat       # Windows
+./setup.command    # macOS (more reliable than double-clicking it)
+.\setup.bat        # Windows
 ```
-It downloads the newest version once and updates each folder the same way that folder's
-own update does (see below). TypeScript and Python are only updated if you ran their setup,
-since their update also updates their dependencies; Java, Go and C# are always updated.
-At the end it lists which folders it updated or skipped.
+Pick one language or several (`1 2`). Each language folder also has its own
+`setup.command` / `setup.bat` that sets up just that one. Running a setup again
+is always safe.
 
-Or update just one language folder:
+## The `cvdesk` command
+```bash
+cvdesk start-guide.ts       # runs a script; the extension picks the language
+cvdesk history.ts AAPL      # anything after the script goes to the script
+cvdesk ~/Desktop/test.py    # a script anywhere: give its path
+cvdesk                      # lists every language's scripts
+cvdesk update               # installs the newest version of everything
+cvdesk update python        # ...of one language folder
+```
+- Your own scripts go in a language's `my-scripts/` folder; updates never touch it.
+  `cvdesk` looks there first, then in `examples/`.
+- Names ignore case, `-` and `_`. Without an extension (`cvdesk history`), a name
+  works if only one language you set up has it.
+- If you move this folder or have several copies, `cvdesk` runs the copy you last
+  ran a setup in. It replaces the `cvdesk-py` command of earlier versions.
 
-| Language | Update (from any folder) | Update (from inside the language folder) |
-|----------|--------------------------|------------------------------------------|
-| [TypeScript](typescript/README.md#getting-the-newest-version) | `cvdesk update` | |
-| [Python](python/README.md#getting-the-newest-version) | `cvdesk-py update` | |
-| [Java](java/README.md#getting-the-newest-version) | | `./update.command` (macOS), `.\update.bat` (Windows) |
-| [Go](go/README.md#getting-the-newest-version) | | `./update.command` (macOS), `.\update.bat` (Windows) |
-| [C#](csharp/README.md#getting-the-newest-version) | | `./update.command` (macOS), `.\update.bat` (Windows) |
+## Updating
+`cvdesk update` (or `./update.command` / `.\update.bat` in this folder) downloads
+the latest GitHub release and installs it (TypeScript and Python only if you ran
+their setup). It never touches `my-scripts/`, `.env` or installed packages. Every file it replaces is saved in `previous-version/`;
+in TypeScript and Python, an example you had changed is moved into `my-scripts/`.
+To install a zip you downloaded yourself: `cvdesk update --from <file.zip>`.
 
-Each one updates only its own language folder, and they all work the same way:
-- They install the latest GitHub release of this project, or the main branch if
-  there are no releases. Adding `--from <zip>` installs a zip you downloaded yourself.
-- `.env`, installed dependencies, build output and files you added are never touched.
-  In TypeScript and Python, your own scripts go in `my-scripts/`, which updates never touch.
-- The example code is replaced with its newest version. In TypeScript and Python,
-  an example you changed is moved into `my-scripts/` first.
-- Every file an update replaces or removes is saved in `previous-version/`.
-
-### For maintainers: how updates stay working
-
-The updater in a user's copy only downloads the new version. It then runs the
-install step **from the downloaded version** (`scripts/install-update.mjs`,
-`scripts/install_update.py`, or `scripts/install-update.sh` / `.ps1`), so changes
-to how a folder is installed reach users with the release that makes them. Two
-rules keep this working:
-- Never rename or remove the install step, and keep accepting its arguments
-  (`<new folder> <project folder> <version name> [<notes or release URL>]`).
-  Copies already out there call it exactly like that.
-- Keep the downloading part (`update.mjs`, `update.py`, `update.sh` / `.ps1`)
-  simple and stable. A change to it only reaches users after they have updated once.
-- The top-level `update.command` / `update.bat` follow the same pattern: `scripts/update.sh`
-  / `.ps1` downloads, then the downloaded `scripts/install-update.sh` / `.ps1` updates the
-  top-level files and runs each language's install step. A new language folder only needs
-  adding there.
-- Updaters replace their own files while they run. Bash and `cmd` read a script while
-  running it, so keep every `update.sh` inside its `{ ... exit }` block, and keep the
-  last command of every `.bat` / `.cmd` on the same line as its `& exit /b`.
+## Tips
+- To read these `.md` files formatted: in VS Code press `Cmd+Shift+V` (macOS) or
+  `Ctrl+Shift+V` (Windows); GitHub shows them formatted too.
+- Changing how setup or updates work? Read [MAINTAINING.md](MAINTAINING.md) first.

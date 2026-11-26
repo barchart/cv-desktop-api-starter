@@ -1,3 +1,10 @@
+#:package openfeed.net@*
+#:property PublishAot=false
+
+// The two lines above make this file a program of its own (.NET 10 runs single
+// .cs files): the Openfeed package it uses, and a setting that keeps the build
+// simple. Copy them into your own scripts too.
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

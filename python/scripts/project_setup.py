@@ -1,4 +1,4 @@
-"""The setup steps shared by setup.command, setup.bat and `cvdesk-py update`:
+"""The setup steps shared by setup.command, setup.bat and `cvdesk update python`:
 - creates my-scripts/, the folder for your own scripts, which updates never touch
 - moves scripts from src/ (where they lived in older versions) into my-scripts/
 - creates the venv, or rebuilds it if it was made with a different Python
@@ -7,7 +7,6 @@
 Run with the Python the venv should use, not the venv's own Python.
 Standard library only, so it works before the venv exists."""
 
-import os
 import shutil
 import subprocess
 import sys
@@ -22,7 +21,7 @@ from project_files import (  # noqa: E402 - after the version check, so old Pyth
 )
 
 SDK = "barchart-desktop-sdk"
-# When run from inside the venv (by `cvdesk-py update`), build with the Python behind it.
+# When run from inside the venv (by `cvdesk update python`), build with the Python behind it.
 BASE_PYTHON = getattr(sys, "_base_executable", sys.executable) if sys.prefix != sys.base_prefix else sys.executable
 QUIET_PIP = ["--disable-pip-version-check", "--no-input", "-q"]
 
@@ -36,9 +35,6 @@ def main() -> None:
     install_dependencies()
     if read_installed() is None:
         write_installed({"version": "unknown", "files": hash_project_files()})
-    launcher = PROJECT_DIR / "bin" / "cvdesk-py"
-    if os.name != "nt" and launcher.exists():
-        launcher.chmod(0o755)
 
 
 def move_old_scripts() -> None:

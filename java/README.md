@@ -1,63 +1,26 @@
-# Java Starter - Quick Notes
+# Java Starter
 
-## Source code
-The actual program is
-[src/main/java/com/barchart/openfeed/StartGuide.java](src/main/java/com/barchart/openfeed/StartGuide.java).
-Open it in any text editor or VS Code, change something, save, then re-run it
-with `./mvnw -q compile exec:java` (see below) to see your change take effect.
+Setup, credentials, `cvdesk` and updating work the same in every language: see the
+[main README](../README.md). This page covers what's specific to Java.
 
-## Prerequisite
-JDK 17+. No Maven install needed - the included `mvnw`/`mvnw.cmd` wrapper
-downloads the right Maven version automatically.
+## Needs
+JDK 17+, from [adoptium.net](https://adoptium.net/). No Maven install needed: setup
+uses the included `mvnw` wrapper.
 
-## First-time setup
-- **macOS**: open Terminal, `cd` into this `java` folder (see the root
-  [README](../README.md#getting-started-no-programming-experience-needed) if
-  you're not sure how), then run:
-  ```bash
-  ./setup.command
-  ```
-- **Windows**: open PowerShell, `cd` into this `java` folder (see the root
-  [README](../README.md#getting-started-no-programming-experience-needed) if
-  you're not sure how), then run:
-  ```powershell
-  .\setup.bat
-  ```
+## Examples
+In [examples/](examples/): [StartGuide.java](examples/StartGuide.java) (credentials:
+the `setUserName` / `setPassword` values).
 
-This checks your setup and compiles the project via `mvnw compile`.
-
-## Add your credentials
-Open [src/main/java/com/barchart/openfeed/StartGuide.java](src/main/java/com/barchart/openfeed/StartGuide.java) and replace `YOUR_USERNAME` / `YOUR_PASSWORD`
-(the `setUserName` and `setPassword` values - search the file for `YOUR_USERNAME`) with your cmdtyView Desktop API credentials.
-Do the same in any new script you add.
-
-## Run it
-```bash
-./mvnw -q compile exec:java
-```
-
-## Getting the newest version
-From inside this `java` folder:
-```bash
-./update.command        # macOS
-.\update.bat            # Windows (PowerShell)
-```
-This downloads the newest version of the project from GitHub (the latest
-release, or the main branch if there are no releases) and installs it over
-this folder. It leaves build output, `.env` and files you added alone. Every
-file it replaces or removes is saved in `previous-version/` first.
-
-The update replaces the example code too, so if you added your credentials to
-`src/main/java/com/barchart/openfeed/StartGuide.java`, copy them from the same file in `previous-version/`
-afterwards. The update lists the files you had changed.
-
-If you downloaded the project as a zip yourself (GitHub's **Code -> Download ZIP**),
-install it with:
-```bash
-./update.command --from ~/Downloads/cv-desktop-api-starter-main.zip
-```
+## Writing scripts
+- Each script is one `.java` file with a `main` method, run straight from source.
+  It can't use classes from your other files, so keep each script self-contained.
+- Scripts get the libraries in [pom.xml](pom.xml), which setup copies into `lib/`.
+  Add a library there and `cvdesk` downloads it on the next run. VS Code's Java
+  support finds `lib/` by itself.
+- Logging settings: [resources/simplelogger.properties](resources/simplelogger.properties).
 
 ## Troubleshooting
-- "Invalid credentials" or login rejected -> check the username and password
-  you entered in `src/main/java/com/barchart/openfeed/StartGuide.java`.
-- Re-running the setup script is safe.
+- Login rejected -> check the credentials in `my-scripts/StartGuide.java`.
+- `cvdesk: command not found` -> open a new terminal window, or run setup again.
+- Your start guide from an older version (in `src/main/java/...`) is moved into
+  `my-scripts/` by the update, if you had changed it.
